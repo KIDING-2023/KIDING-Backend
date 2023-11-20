@@ -16,6 +16,12 @@ on:
 permissions:
   contents: read
 
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: kiding-deploy-bucket
+  CODE_DEPLOY_APPLICATION_NAME: kiding-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: kiding-deployment-group
+
 jobs:
   build:
 
