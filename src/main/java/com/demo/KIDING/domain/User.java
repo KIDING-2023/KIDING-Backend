@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Getter
 @Table(name = "user")
 @Entity
-public class User {
+public class User extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,5 +29,9 @@ public class User {
     private int players_with;  // 함께한 친구
 
     private int kiding_chip;  // 키딩칩
+
+    @OneToMany(mappedBy = "user")
+    private List<BookMark> bookMarks;  // 즐겨찾기
+
 
 }
