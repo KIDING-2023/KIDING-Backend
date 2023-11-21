@@ -20,4 +20,6 @@ public class BoardGame {
 
     @Column(unique = true)
     private String name;
+
+    private Long players;
 }
