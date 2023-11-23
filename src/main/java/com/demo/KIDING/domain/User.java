@@ -22,6 +22,11 @@ public class User extends BaseEntity{
     @Column(unique = true)
     private String nickname;
 
+    private boolean activated;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     private int answers;  // 누적 대답수
 
     private int score;  // 1위 경험횟수
