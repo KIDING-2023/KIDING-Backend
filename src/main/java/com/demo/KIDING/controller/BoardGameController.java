@@ -1,20 +1,19 @@
 package com.demo.KIDING.controller;
 
 import com.demo.KIDING.dto.BoardGameRes;
+import com.demo.KIDING.dto.GamePlayReq;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
+import com.demo.KIDING.global.common.BaseResponseStatus;
 import com.demo.KIDING.service.BoardGameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.demo.KIDING.global.common.BaseResponseStatus.NO_BOARD_GAME_PLAYERS_YET;
-import static com.demo.KIDING.global.common.BaseResponseStatus.NO_BOARD_GAME_YET;
+import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
 @Slf4j
 @RestController
@@ -62,5 +61,17 @@ public class BoardGameController {
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
+    }
+
+    @PostMapping("/boardgame")  // 답변완료 api
+    public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestBody GamePlayReq gamePlayReq) {
+
+        try {
+            boardGameService.boardGamePlay(gamePlayReq.getName(), gamePlayReq.getUserId());
+            return new BaseResponse<>(GAME_PLAYED);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 }
