@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,5 +30,15 @@ public class BoardGameService {
                 .map(BoardGameRes::from)
                 .collect(Collectors.toList());
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardGameRes> boardGamePopular() throws BaseException {
+        log.info("인기 보드게임을 조회하였습니다.");
+
+        return boardGameRepository.findAll().stream()
+                .map(BoardGameRes::from)
+                .sorted(Comparator.comparing(BoardGameRes::getPlayers).reversed())  // 플레이어수 많은 게임순으로 리턴
+                .collect(Collectors.toList());
     }
 }
