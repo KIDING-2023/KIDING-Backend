@@ -16,7 +16,9 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_NICKNAME(false, 400, "중복된 닉네임입니다."),
     REQUEST_ERROR(false, 400, "입력값을 확인해주세요."),
     NO_BOARD_GAME_YET(true, 200, "등록된 보드게임이 없습니다."),
-    NO_BOARD_GAME_PLAYERS_YET(true, 200, "아직 게임 플레이어가 없습니다.");
+    NO_BOARD_GAME_PLAYERS_YET(true, 200, "아직 게임 플레이어가 없습니다."),
+    NO_GAME_PLAYED_YET(true, 200, "아직 보드게임에 참여하지 않았습니다."),
+    NO_USER_FOUND(true, 200, "해당 유저는 존재하지 않습니다.");
 
 
     private final boolean isSuccess;
