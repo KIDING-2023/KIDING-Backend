@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.demo.KIDING.global.common.BaseResponseStatus.NO_BOARD_GAME_YET;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +24,12 @@ public class BoardGameController {
     public BaseResponse<List<BoardGameRes>> boardGamesMain() {
 
         try {
-            return new BaseResponse<>(boardGameService.boardGamesMain());
+            List<BoardGameRes> boardGameResList = boardGameService.boardGamesMain();
+            if (boardGameResList.isEmpty()) {
+                return new BaseResponse<>(NO_BOARD_GAME_YET);
+            } else {
+                return new BaseResponse<>(boardGameResList);
+            }
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
