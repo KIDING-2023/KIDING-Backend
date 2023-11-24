@@ -22,4 +22,8 @@ public class BoardGame {
     private String name;
 
     private Long players;
+
+    public void playGame() {
+        this.players += 1;
+    }
 }

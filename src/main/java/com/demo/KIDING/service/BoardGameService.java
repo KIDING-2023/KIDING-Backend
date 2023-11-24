@@ -2,6 +2,7 @@ package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.domain.GameUser;
+import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.BoardGameRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
@@ -18,8 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.demo.KIDING.global.common.BaseResponseStatus.NO_GAME_PLAYED_YET;
-import static com.demo.KIDING.global.common.BaseResponseStatus.NO_USER_FOUND;
+import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
 @Slf4j
 @Service
@@ -76,5 +76,30 @@ public class BoardGameService {
             log.info(userId + "사용자는 아직 보드게임을 플레이하지 않았습니다.");
             throw new BaseException(NO_GAME_PLAYED_YET);  // 아직 게임 플레이X
         }
+    }
+
+    @Transactional
+    public void boardGamePlay(String gameName, Long userId) throws BaseException{
+//        log.info(userId.getClass().getName());
+//        log.info(String.valueOf(userId));
+
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+        if (!boardGameRepository.existsByName(gameName)) {
+            throw new BaseException(NO_GAME_FOUND);
+        }
+
+        // gameUser에 업데이트, 키딩칩 & 누적 대답수 +1, boargame player +1
+        gameUserRepository.save(GameUser.builder()
+                .user(userRepository.findById(userId).get())
+                .boardGame(boardGameRepository.findByName(gameName).get()).build());
+
+        User loginUser = userRepository.findById(userId).get();
+        BoardGame boardGame = boardGameRepository.findByName(gameName).get();
+        boardGame.playGame();
+        loginUser.playGame();
+
+        log.info(userId +" 사용자가 " + gameName + " 보드게임을 플레이하였습니다.");
     }
 }
