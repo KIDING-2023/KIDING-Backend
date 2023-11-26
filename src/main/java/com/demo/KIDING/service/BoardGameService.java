@@ -4,6 +4,7 @@ import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.domain.GameUser;
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.BoardGameRes;
+import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.repository.BoardGameRepository;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
@@ -101,5 +103,18 @@ public class BoardGameService {
         loginUser.playGame();
 
         log.info(userId +" 사용자가 " + gameName + " 보드게임을 플레이하였습니다.");
+    }
+
+    @Transactional(readOnly = true)
+    public RankingRes todayRanking() throws BaseException {
+
+        Optional<List<RankingRes>> rankingRes = userRepository.findRankUser();
+
+        if (rankingRes.get().isEmpty()) {
+            throw new BaseException(NO_BOARD_GAME_PLAYERS_YET);
+        }
+
+        return rankingRes.get().get(0);
+
     }
 }

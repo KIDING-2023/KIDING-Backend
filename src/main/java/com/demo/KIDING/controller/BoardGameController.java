@@ -2,6 +2,7 @@ package com.demo.KIDING.controller;
 
 import com.demo.KIDING.dto.BoardGameRes;
 import com.demo.KIDING.dto.GamePlayReq;
+import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -73,5 +74,15 @@ public class BoardGameController {
             return new BaseResponse<>(e.getStatus());
         }
 
+    }
+
+    @GetMapping("/today/ranking")
+    public BaseResponse<RankingRes> todayRanking() {
+
+        try {
+            return new BaseResponse<>(boardGameService.todayRanking());
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 }
