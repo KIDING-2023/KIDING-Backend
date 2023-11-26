@@ -62,6 +62,10 @@ public class UserService {
         if (!boardGameRepository.existsById(boardgameId)) {
             throw new BaseException(NO_GAME_FOUND);
         }
+
+        if (bookMarkRepository.existsByUserIdAndBoardGameId(userId, boardgameId)) {
+            throw new BaseException(BOOKMARKED_ALREADY);
+        }
         Optional<User> userById = userRepository.findById(userId);
         Optional<BoardGame> gameById = boardGameRepository.findById(boardgameId);
 
