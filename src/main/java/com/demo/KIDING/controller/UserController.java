@@ -1,6 +1,7 @@
 package com.demo.KIDING.controller;
 
 import com.demo.KIDING.domain.BoardGame;
+import com.demo.KIDING.dto.BookMarkRes;
 import com.demo.KIDING.dto.SignUpReq;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -13,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
@@ -49,5 +52,15 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
 
+    }
+
+    @GetMapping("/bookmark/{userId}")
+    public BaseResponse<List<BookMarkRes>> getAllBookMark(@PathVariable Long userId) {
+
+        try {
+            return new BaseResponse(userService.getAllBookMark(userId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 }
