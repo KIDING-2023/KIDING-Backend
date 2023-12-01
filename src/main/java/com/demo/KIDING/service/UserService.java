@@ -4,6 +4,7 @@ import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.domain.BookMark;
 import com.demo.KIDING.domain.Role;
 import com.demo.KIDING.domain.User;
+import com.demo.KIDING.dto.BookMarkRes;
 import com.demo.KIDING.dto.SignUpReq;
 import com.demo.KIDING.dto.UserDtoRes;
 import com.demo.KIDING.global.common.BaseException;
@@ -15,7 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
@@ -76,5 +80,33 @@ public class UserService {
 
         log.info(userById.get().getNickname() + " 사용자가 `" + gameById.get().getName() + "` 보드게임을 즐겨찾기 설정했습니다.");
         
+    }
+    @Transactional(readOnly = true)
+    public List<BookMarkRes> getAllBookMark(Long userId) throws BaseException {
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+
+
+        Optional<List<BookMark>> byUserId = bookMarkRepository.findByUserId(userId);
+        if (byUserId.get().isEmpty()) {
+            throw new BaseException(NO_BOOKMARK_YET);
+        }
+        List<BookMarkRes> bookMarkResList = new ArrayList<>();
+
+        for (BookMark bookMark : byUserId.get()) {
+            BookMarkRes bookMarkRes = BookMarkRes.builder()
+                    .BoardGameId(bookMark.getId())
+                    .name(bookMark.getBoardGame().getName())
+                    .players(bookMark.getBoardGame().getPlayers())
+                    .build();
+            bookMarkResList.add(bookMarkRes);
+        }
+
+//        return bookMarkRepository.findByUserId(userId).stream()
+//                .map(BookMarkRes::from)
+//                .collect(Collectors.toList());
+        return bookMarkResList;
+
     }
 }

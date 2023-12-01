@@ -22,7 +22,8 @@ public enum BaseResponseStatus {
     NO_GAME_FOUND(true, 200, "해당 게임은 존재하지 않습니다"),
     GAME_PLAYED(true, 200, "게임을 플레이하였습니다."),
     BOOKMARK_REQUESTED(true, 200, "즐겨찾기 설정이 완료되었습니다."),
-    BOOKMARKED_ALREADY(true, 200, "이미 즐겨찾기가 설정된 게임입니다.");
+    BOOKMARKED_ALREADY(true, 200, "이미 즐겨찾기가 설정된 게임입니다."),
+    NO_BOOKMARK_YET(true, 200, "즐겨찾기 설정한 게임이 없습니다.");
 
 
     private final boolean isSuccess;
