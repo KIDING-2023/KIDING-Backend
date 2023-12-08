@@ -42,6 +42,18 @@ public class UserController {
         }
     }
 
+    @PostMapping("/character/{userId}/{num}")
+    public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num) {
+
+        try {
+            userService.character(userId, num);
+            return new BaseResponse<>(SUCCESS_TO_CHARACTER);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
     @PostMapping("/bookmark/{userId}/{boardgameId}")
     public BaseResponse bookmark(@PathVariable Long userId, @PathVariable Long boardgameId) {
 

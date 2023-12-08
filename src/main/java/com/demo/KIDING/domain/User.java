@@ -27,6 +27,8 @@ public class User extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String profile;
+
     private int answers;  // 누적 대답수
 
     private int score;  // 1위 경험횟수
@@ -41,6 +43,22 @@ public class User extends BaseEntity{
     public void playGame() {
         this.answers += 1;
         this.kiding_chip += 1;
+    }
+
+    public void setCharacter(Integer num) {
+        switch(num) {
+            case 1:
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/1%EB%B2%88.png";
+                return ;
+            case 2:
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/2%EB%B2%88.png";
+                return ;
+            case 3:
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/3%EB%B2%88.png";
+                return ;
+            case 4:
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/4%EB%B2%88.png";
+        }
     }
 
 }

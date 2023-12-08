@@ -8,6 +8,7 @@ import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.repository.BoardGameRepository;
+import com.demo.KIDING.repository.BookMarkRepository;
 import com.demo.KIDING.repository.GameUserRepository;
 import com.demo.KIDING.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final GameUserRepository gameUserRepository;
     private final UserRepository userRepository;
+    private final BookMarkRepository bookMarkRepository;
 
     @Transactional(readOnly = true)
     public List<BoardGameRes> boardGamesMain() throws BaseException {
