@@ -58,6 +58,18 @@ public class UserService {
     }
 
     @Transactional
+    public void character(Long userId, Integer num) throws BaseException {
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+        User loginUser = userRepository.findById(userId).get();
+        log.info("유저 찾음");
+        loginUser.setCharacter(num);
+        log.info("캐릭터 설정을 완료하였습니다.");
+
+    }
+
+    @Transactional
     public void bookmark(Long userId, Long boardgameId) throws BaseException{
 
         if (!userRepository.existsById(userId)) {
