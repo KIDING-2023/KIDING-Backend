@@ -48,16 +48,16 @@ public class User extends BaseEntity{
     public void setCharacter(Integer num) {
         switch(num) {
             case 1:
-                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/1%EB%B2%88.png";
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/Group+13873.png";
                 return ;
             case 2:
-                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/2%EB%B2%88.png";
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/Group+13887.png";
                 return ;
             case 3:
-                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/3%EB%B2%88.png";
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/Group+13875.png";
                 return ;
             case 4:
-                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/4%EB%B2%88.png";
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/Group+13876.png";
         }
     }
 
