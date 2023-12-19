@@ -77,7 +77,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userId]/mypage")
+    @GetMapping("/{userId}/mypage")
     public BaseResponse<MyPageRes> getMyPage(@PathVariable Long userId) {
 
         try {
