@@ -10,7 +10,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://kiding-db.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding-db
+    url: jdbc:mysql://kiding.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/KIDING
     username: admin
     password: abcd1234
   jpa:
