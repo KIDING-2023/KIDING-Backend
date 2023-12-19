@@ -5,6 +5,7 @@ import com.demo.KIDING.domain.BookMark;
 import com.demo.KIDING.domain.Role;
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.BookMarkRes;
+import com.demo.KIDING.dto.MyPageRes;
 import com.demo.KIDING.dto.SignUpReq;
 import com.demo.KIDING.dto.UserDtoRes;
 import com.demo.KIDING.global.common.BaseException;
@@ -120,5 +121,21 @@ public class UserService {
 //                .collect(Collectors.toList());
         return bookMarkResList;
 
+    }
+
+    @Transactional(readOnly = true)
+    public MyPageRes getMyPage(Long userId) throws BaseException {
+
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+
+        User loginUser = userRepository.findById(userId).get();
+        return MyPageRes.builder()
+                .nickname(loginUser.getNickname())
+                .answers(loginUser.getAnswers())
+                .score(loginUser.getScore())
+                .players_with(loginUser.getPlayers_with())
+                .kiding_chip(loginUser.getKiding_chip()).build();
     }
 }

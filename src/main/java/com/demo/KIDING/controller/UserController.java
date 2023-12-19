@@ -2,6 +2,7 @@ package com.demo.KIDING.controller;
 
 import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.dto.BookMarkRes;
+import com.demo.KIDING.dto.MyPageRes;
 import com.demo.KIDING.dto.SignUpReq;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -71,6 +72,16 @@ public class UserController {
 
         try {
             return new BaseResponse(userService.getAllBookMark(userId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/{userId]/mypage")
+    public BaseResponse<MyPageRes> getMyPage(@PathVariable Long userId) {
+
+        try {
+            return new BaseResponse<>(userService.getMyPage(userId));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
