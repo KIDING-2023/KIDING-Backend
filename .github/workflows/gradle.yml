@@ -40,6 +40,13 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      # yml 파일 생성
+      - name: Create Property
+        run: |
+          cd ./src/main/resources
+          touch ./application.yml
+          echo "${{secrets.PROPERTIES}}" > ./application.yml
+
       # not executable 에러로 권한 부여 해줌
       - name: Run chomod to make gradlew executable
         run: chmod +x ./gradlew
