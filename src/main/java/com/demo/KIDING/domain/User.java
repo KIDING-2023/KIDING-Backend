@@ -40,6 +40,9 @@ public class User extends BaseEntity{
     @OneToMany(mappedBy = "user")
     private List<BookMark> bookMarks;  // 즐겨찾기
 
+    @OneToOne(mappedBy = "user")
+    private Ranking ranking;
+
     public void playGame() {
         this.answers += 1;
         this.kiding_chip += 1;
