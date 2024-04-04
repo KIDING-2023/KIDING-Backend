@@ -1,9 +1,11 @@
 package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.BoardGame;
+import com.demo.KIDING.domain.BookMark;
 import com.demo.KIDING.domain.GameUser;
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.BoardGameRes;
+import com.demo.KIDING.dto.BookMarkRes;
 import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
@@ -34,16 +36,35 @@ public class BoardGameService {
     private final UserRepository userRepository;
     private final BookMarkRepository bookMarkRepository;
 
-    @Transactional(readOnly = true)
-    public List<BoardGameRes> boardGamesMain() throws BaseException {
-
-        log.info("메인 보드게임을 조회하였습니다.");
-
-        return boardGameRepository.findAll().stream()
-                .map(BoardGameRes::from)
-                .collect(Collectors.toList());
-
-    }
+//    @Transactional(readOnly = true)
+//    public List<BoardGameRes> boardGamesMain(Long userId) throws BaseException {
+//
+//        User user = userRepository.findById(userId)
+//                        .orElseThrow(() -> new BaseException(NO_USER_FOUND));
+//
+//        log.info("메인 보드게임을 조회하였습니다.");
+//
+//        List<BoardGameRes> boardGameRes = boardGameRepository.findAll().stream()
+//                .map(BoardGameRes::from)
+//                .collect(Collectors.toList());
+//
+////        Optional<List<BookMark>> bookMarkedGames = bookMarkRepository.findByUserId(userId);
+//
+//        // 즐겨찾기한 게임 id 추출
+//        List<Long> bookmarkedGameIds = user.getBookMarks().stream()
+//                .map(bookmark -> bookmark.getBoardGame().getId())
+//                .collect(Collectors.toList());
+//
+//        // 즐겨찾기 여부 표시
+//        for (BoardGameRes bmres: boardGameRes) {
+//            bmres.setBookmarked(bookmarkedGame);
+//        }
+//
+//        return boardGameRepository.findAll().stream()
+//                .map(BoardGameRes::from)
+//                .collect(Collectors.toList());
+//
+//    }
 
     @Transactional(readOnly = true)
     public List<BoardGameRes> boardGamePopular() throws BaseException {
