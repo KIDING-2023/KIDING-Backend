@@ -23,21 +23,21 @@ public class BoardGameController {
 
     private final BoardGameService boardGameService;
 
-    @GetMapping("/boardgames/main")
-    public BaseResponse<List<BoardGameRes>> boardGamesMain() {
-
-        try {
-            List<BoardGameRes> boardGameResList = boardGameService.boardGamesMain();
-            if (boardGameResList.isEmpty()) {
-                return new BaseResponse<>(NO_BOARD_GAME_YET);
-            } else {
-                return new BaseResponse<>(boardGameResList);
-            }
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
-
-    }
+//    @GetMapping("/boardgames/{userId}/main")
+//    public BaseResponse<List<BoardGameRes>> boardGamesMain(@PathVariable Long userId) {
+//
+//        try {
+//            List<BoardGameRes> boardGameResList = boardGameService.boardGamesMain(userId);
+//            if (boardGameResList.isEmpty()) {
+//                return new BaseResponse<>(NO_BOARD_GAME_YET);
+//            } else {
+//                return new BaseResponse<>(boardGameResList);
+//            }
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//
+//    }
 
     @GetMapping("/boardgames/popular")
     public BaseResponse<List<BoardGameRes>> boardGamesPopular() {

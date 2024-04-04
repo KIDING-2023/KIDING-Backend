@@ -116,9 +116,6 @@ public class UserService {
             bookMarkResList.add(bookMarkRes);
         }
 
-//        return bookMarkRepository.findByUserId(userId).stream()
-//                .map(BookMarkRes::from)
-//                .collect(Collectors.toList());
         return bookMarkResList;
 
     }

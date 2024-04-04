@@ -11,7 +11,7 @@ public class BoardGameRes {
 
     private String name;
     private Long players;
-//    private boolean bookmark;
+    private boolean bookmarked;
 
 
     public static BoardGameRes from(BoardGame boardGame) {

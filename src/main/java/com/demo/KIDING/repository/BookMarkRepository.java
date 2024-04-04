@@ -1,7 +1,6 @@
 package com.demo.KIDING.repository;
 
 import com.demo.KIDING.domain.BookMark;
-import com.demo.KIDING.dto.BookMarkRes;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
