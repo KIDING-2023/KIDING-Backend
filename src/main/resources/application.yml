@@ -18,12 +18,12 @@ logging:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
-    username: root
-    password: 1234
-#    url: jdbc:mysql://kidingdb.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding?autoReconnect=true
-#    username: admin
-#    password: abcd1234
+#    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
+#    username: root
+#    password: 1234
+    url: jdbc:mysql://kidingdb.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding?autoReconnect=true
+    username: admin
+    password: Abcd1234
   #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
@@ -31,7 +31,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update #create update none
+      ddl-auto: create #create update none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
