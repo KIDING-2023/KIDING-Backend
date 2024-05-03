@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor
@@ -20,7 +22,15 @@ public class User extends BaseEntity{
     private Long id;
 
     @Column(unique = true)
+    @NotNull
     private String nickname;
+
+    @NotNull
+    private String password;
+
+    @Column(unique = true)
+    @NotNull
+    private String phone;
 
     private boolean activated;
 

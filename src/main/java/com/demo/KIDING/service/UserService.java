@@ -40,9 +40,15 @@ public class UserService {
             throw new BaseException(POST_USERS_EXISTS_NICKNAME);
         }
 
+        if (userRepository.existsByPhone(signUpReq.getPhone())) {
+            throw new BaseException(POST_USERS_EXISTS_PHONE);
+        }
+
         try {
             User newUser = userRepository.save(User.builder()
                     .nickname(signUpReq.getNickname())
+                    .phone(signUpReq.getPhone())
+                    .password(signUpReq.getPassword())
                     .activated(true)
                     .role(Role.ROLE_USER)
                     .answers(0)
