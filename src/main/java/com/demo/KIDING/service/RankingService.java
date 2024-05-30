@@ -16,5 +16,10 @@ public class RankingService {
         rankingRepository.deleteAll();
     }
 
+    // 랭킹 조회
+    public void viewRanking() {
+        rankingRepository.findAll();
+    }
+
 
 }

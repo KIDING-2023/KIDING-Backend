@@ -8,6 +8,7 @@ import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.BaseResponseStatus;
 import com.demo.KIDING.service.BoardGameService;
+import com.demo.KIDING.service.RankingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 public class BoardGameController {
 
     private final BoardGameService boardGameService;
+    private final RankingService rankingService;
 
 //    @GetMapping("/boardgames/{userId}/main")
 //    public BaseResponse<List<BoardGameRes>> boardGamesMain(@PathVariable Long userId) {
@@ -76,10 +78,11 @@ public class BoardGameController {
 
     }
 
-    @GetMapping("/today/ranking")
+    @GetMapping("/today/ranking") // 랭킹 조회
     public BaseResponse<RankingRes> todayRanking() {
 
         try {
+            rankingService.viewRanking();
             return new BaseResponse<>(boardGameService.todayRanking());
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

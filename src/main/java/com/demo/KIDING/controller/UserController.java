@@ -33,7 +33,6 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             ValidErrorDetails errorDetails = new ValidErrorDetails();
             return new BaseResponse<>(REQUEST_ERROR, errorDetails.validateHandler(bindingResult));
-
         }
 
         try {
@@ -42,6 +41,8 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+
 
     @PostMapping("/character/{userId}/{num}")
     public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num) {

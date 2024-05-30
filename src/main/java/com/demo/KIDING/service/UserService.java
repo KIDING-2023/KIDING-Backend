@@ -64,6 +64,10 @@ public class UserService {
         }
     }
 
+
+
+
+
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {
         if (!userRepository.existsById(userId)) {
