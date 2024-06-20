@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNickname(String nickname);
 
+    User findTopByOrderByAnswersAsc();
+
     @Query(value = "SELECT u.id, u.nickname, u.answers FROM user u INNER JOIN game_user gu ON u.id = gu.user_id ORDER BY u.answers DESC", nativeQuery = true)
     Optional<List<RankingRes>> findRankUser();
 }
