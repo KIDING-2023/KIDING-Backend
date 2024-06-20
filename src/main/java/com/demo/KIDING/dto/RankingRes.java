@@ -1,10 +1,26 @@
 package com.demo.KIDING.dto;
 
-public interface RankingRes {
+import com.demo.KIDING.domain.User;
+import lombok.*;
 
-    Long getId();
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class RankingRes {
 
-    String getNickname();
+    private Long id;
+    private String nickname;
+    private String profileImage;
+    private Integer answers;
 
-    Integer getAnswers();
+    public static RankingRes from(User user){
+        return RankingRes.builder()
+                .id(user.getId())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfile())
+                .answers(user.getAnswers())
+                .build();
+    }
 }
