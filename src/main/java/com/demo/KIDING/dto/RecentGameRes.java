@@ -14,4 +14,6 @@ public class RecentGameRes {
     private String name;
     private Long players;
     private Timestamp time;
+    private boolean bookmarked;
+
 }

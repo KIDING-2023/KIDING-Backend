@@ -18,10 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
@@ -36,44 +33,69 @@ public class BoardGameService {
     private final UserRepository userRepository;
     private final BookMarkRepository bookMarkRepository;
 
-//    @Transactional(readOnly = true)
-//    public List<BoardGameRes> boardGamesMain(Long userId) throws BaseException {
-//
-//        User user = userRepository.findById(userId)
-//                        .orElseThrow(() -> new BaseException(NO_USER_FOUND));
-//
-//        log.info("메인 보드게임을 조회하였습니다.");
-//
-//        List<BoardGameRes> boardGameRes = boardGameRepository.findAll().stream()
-//                .map(BoardGameRes::from)
-//                .collect(Collectors.toList());
-//
-////        Optional<List<BookMark>> bookMarkedGames = bookMarkRepository.findByUserId(userId);
-//
-//        // 즐겨찾기한 게임 id 추출
-//        List<Long> bookmarkedGameIds = user.getBookMarks().stream()
-//                .map(bookmark -> bookmark.getBoardGame().getId())
-//                .collect(Collectors.toList());
-//
-//        // 즐겨찾기 여부 표시
-//        for (BoardGameRes bmres: boardGameRes) {
-//            bmres.setBookmarked(bookmarkedGame);
-//        }
-//
-//        return boardGameRepository.findAll().stream()
-//                .map(BoardGameRes::from)
-//                .collect(Collectors.toList());
-//
-//    }
 
     @Transactional(readOnly = true)
-    public List<BoardGameRes> boardGamePopular() throws BaseException {
+    public List<BoardGameRes> boardGamesMain(Long userId) throws BaseException {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(NO_USER_FOUND));
+
+        log.info("메인 보드게임을 조회하였습니다.");
+
+        // 가져온 보드게임에 즐겨찾기 설정 여부 표시해줘야함!!
+        // 1. 모든 보드게임 가져와서 BoardGameRes로 변환
+        // 2. 유저 id로 유저가 즐겨찾기한 보드게임 이름 찾기
+        // 3. 보드게임 이름 for문으로 BoardGameRes 리스트에서 이름이 일치하면 북마크 여부 True로
+        List<BoardGameRes> boardGameRes = boardGameRepository.findAll().stream()
+                .map(BoardGameRes::from)
+                .collect(Collectors.toList());
+
+//        Optional<List<BookMark>> bookMarkedGames = bookMarkRepository.findByUserId(userId);
+
+        // 즐겨찾기한 게임이름 추출
+        List<String> bookmarkedGameNames = user.getBookMarks().stream()
+                .map(bookmark -> bookmark.getBoardGame().getName())
+                .collect(Collectors.toList());
+
+        // 즐겨찾기 여부 표시
+        for (BoardGameRes bg: boardGameRes) {
+            for (String bookmarkedGame: bookmarkedGameNames) {
+                if (Objects.equals(bg.getName(), bookmarkedGame)) {  // 이름 일치하면
+                    bg.setBookmarked(true);
+                }
+            }
+        }
+
+        return boardGameRes;
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardGameRes> boardGamePopular(Long userId) throws BaseException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(NO_USER_FOUND));
+
         log.info("인기 보드게임을 조회하였습니다.");
 
-        return boardGameRepository.findAll().stream()
+        List<BoardGameRes> boardGameRes = boardGameRepository.findAll().stream()
                 .map(BoardGameRes::from)
                 .sorted(Comparator.comparing(BoardGameRes::getPlayers).reversed())  // 플레이어수 많은 게임순으로 리턴
                 .collect(Collectors.toList());
+
+        // 즐겨찾기한 게임이름 추출
+        List<String> bookmarkedGameNames = user.getBookMarks().stream()
+                .map(bookmark -> bookmark.getBoardGame().getName())
+                .collect(Collectors.toList());
+
+        // 즐겨찾기 여부 표시
+        for (BoardGameRes bg: boardGameRes) {
+            for (String bookmarkedGame: bookmarkedGameNames) {
+                if (Objects.equals(bg.getName(), bookmarkedGame)) {  // 이름 일치하면
+                    bg.setBookmarked(true);
+                }
+            }
+        }
+
+        return boardGameRes;
     }
 
     @Transactional(readOnly = true)
@@ -82,24 +104,44 @@ public class BoardGameService {
             throw new BaseException(NO_USER_FOUND);
         }
 
+        // 1. 그 유저가 플레이한 기록 GameUser에서 조회
+        // 2. RecentGameRes 리스트 만들어서 북마크 여부 빼고 값 넣기
+        // 3. user.getBookMarks() 로 즐겨찾기한 게임 이름 추출
+        // 4. RecentGameRes에서 즐겨찾기한 이름 나오면 값 true로 변경
         if (gameUserRepository.existsByUserId(userId)) {  // 보드게임 하나라도 해본 경우
-
-            List<GameUser> byUserId = gameUserRepository.findByUserId(userId);
+            User user = userRepository.findById(userId).get();
+            List<GameUser> byUserId = gameUserRepository.findByUserId(userId);  // 게임 기록 조회
             List<RecentGameRes> boardGameResList = new ArrayList<>();
-            for (GameUser gameUser : byUserId) {
-                BoardGame bg = boardGameRepository.findById(gameUser.getBoardGame().getId()).get();
+            for (GameUser gameUser : byUserId) {  // 보드게임 이름 가져와서 값 넣어주기
+                BoardGame bg = boardGameRepository.findByName(gameUser.getBoardGame().getName()).get();
                 boardGameResList.add(RecentGameRes.builder()
                         .name(bg.getName())
                         .players(bg.getPlayers())
+                        .bookmarked(false)
                         .time(gameUser.getCreatedDate()).build());
             }
+
+            // 즐겨찾기한 게임이름 추출
+            List<String> bookmarkedGameNames = user.getBookMarks().stream()
+                    .map(bookmark -> bookmark.getBoardGame().getName())
+                    .collect(Collectors.toList());
+
+            // 즐겨찾기 여부 표시
+            for (RecentGameRes recentGameRes: boardGameResList) {
+                for (String bookmarkedGame: bookmarkedGameNames) {
+                    if (Objects.equals(recentGameRes.getName(), bookmarkedGame)) {  // 이름 일치하면
+                        recentGameRes.setBookmarked(true);
+                    }
+                }
+            }
+
             boardGameResList.sort(Comparator.comparing(RecentGameRes::getTime).reversed()); // 최근 플레이순으로 정렬
 
             return boardGameResList;
 
         } else {
             log.info(userId + "사용자는 아직 보드게임을 플레이하지 않았습니다.");
-            throw new BaseException(NO_GAME_PLAYED_YET);  // 아직 게임 플레이X
+            throw new BaseException(NO_GAME_PLAYED_YET);  // 아직 게임 플레이 X
         }
     }
 

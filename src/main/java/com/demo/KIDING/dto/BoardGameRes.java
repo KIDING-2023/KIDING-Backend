@@ -18,6 +18,7 @@ public class BoardGameRes {
         return BoardGameRes.builder()
                 .name(boardGame.getName())
                 .players(boardGame.getPlayers())
+                .bookmarked(false)
                 .build();
     }
 
