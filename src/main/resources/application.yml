@@ -21,20 +21,22 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
-    username: root
-    password: 1234
-#    url: jdbc:mysql://kiding.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding?autoReconnect=true
-#    username: admin
-#    password: Abcd1234
-
+    #    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
+    #    username: root
+    #    password: 1234
+    url: jdbc:mysql://kiding.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding?autoReconnect=true
+    username: admin
+    password: Abcd1234
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
     allow-circular-references: true
 
   jpa:
-    hibernate:
-      ddl-auto: create #create update none
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
+    properties:
+      hibernate:
+        ddl-auto: create #create update none
+        globally_quoted_identifiers: true
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      show-sql: true

@@ -50,7 +50,7 @@ public class UserService {
                     .phone(signUpReq.getPhone())
                     .password(signUpReq.getPassword())
                     .activated(true)
-                    .role(Role.ROLE_USER)
+                    .role(Role.USER)
                     .answers(0)
                     .score(0)
                     .players_with(0)
