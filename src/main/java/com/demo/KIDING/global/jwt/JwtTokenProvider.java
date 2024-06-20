@@ -1,5 +1,6 @@
 package com.demo.KIDING.global.jwt;
 
+import com.demo.KIDING.repository.UserRepository;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +37,8 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createAccessToken(String phone, String role) {
-        Claims claims = Jwts.claims().setSubject(phone);
+    public String createToken(String nickname, String role) {
+        Claims claims = Jwts.claims().setSubject(nickname);
         claims.put("role", role);
         Date now = new Date();
         return Jwts.builder()
@@ -58,11 +59,11 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = customUserDetailsService.loadUserByPhone(getUserPhone(token));
+        UserDetails userDetails = customUserDetailsService.loadUserByNickname(getUserNickname(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUserPhone(String token) {
+    public String getUserNickname(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 

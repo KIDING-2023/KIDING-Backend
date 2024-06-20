@@ -3,6 +3,7 @@ package com.demo.KIDING.controller;
 import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.dto.BookMarkRes;
 import com.demo.KIDING.dto.MyPageRes;
+import com.demo.KIDING.dto.SignInReq;
 import com.demo.KIDING.dto.SignUpReq;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -11,6 +12,7 @@ import com.demo.KIDING.global.common.ValidErrorDetails;
 import com.demo.KIDING.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,15 @@ public class UserController {
         }
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody SignInReq request) {
+        try {
+            String token = userService.login(request);
+            return ResponseEntity.ok(token);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
 
 
     @PostMapping("/character/{userId}/{num}")

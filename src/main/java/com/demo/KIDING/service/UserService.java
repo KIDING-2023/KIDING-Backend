@@ -4,11 +4,9 @@ import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.domain.BookMark;
 import com.demo.KIDING.domain.Role;
 import com.demo.KIDING.domain.User;
-import com.demo.KIDING.dto.BookMarkRes;
-import com.demo.KIDING.dto.MyPageRes;
-import com.demo.KIDING.dto.SignUpReq;
-import com.demo.KIDING.dto.UserDtoRes;
+import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
+import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
 import com.demo.KIDING.repository.UserRepository;
@@ -32,8 +30,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final BoardGameRepository boardGameRepository;
     private final BookMarkRepository bookMarkRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class})
     public UserDtoRes signup(SignUpReq signUpReq) throws BaseException {
 
         if (userRepository.existsByNickname(signUpReq.getNickname())) {
@@ -64,9 +63,22 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public String login(SignInReq request) {
+        User user = userRepository.findByNickname(request.getNickname())
+                .orElseThrow(() -> new IllegalArgumentException("가입된 닉네임이 아닙니다."));
+//        validateMatchedPassword(request.getPassword(), user.getPassword());
 
+        String role = user.getRole().name();
+        return jwtTokenProvider.createToken(user.getNickname(), role);
+    }
 
-
+//    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
+//        // 비밀번호 검증 로직
+//        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
+//    }
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {

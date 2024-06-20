@@ -6,15 +6,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService {
 
     private final UserRepository userRepository;
 
 
-    public UserDetails loadUserByPhone(String phone) throws UsernameNotFoundException {
-        return (UserDetails) userRepository.findByPhone(phone)
+    public UserDetails loadUserByNickname(String nickname) throws UsernameNotFoundException {
+        return (UserDetails) userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
     }
 }

@@ -26,19 +26,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .formLogin().disable()
+
                 .httpBasic().disable()
                 .cors().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/signup", "/login").permitAll()
+                .antMatchers("/signup", "/login", "/boardgame").permitAll()
                 .antMatchers("/user").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore((Filter) new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+                .formLogin().disable()
+//                    .loginPage("/login")
+//                    .permitAll()
+//                .defaultSuccessUrl("/home", true)
+//                .failureUrl("/login?error=true")
+//                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
