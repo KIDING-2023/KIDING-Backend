@@ -1,10 +1,7 @@
 package com.demo.KIDING.controller;
 
 import com.demo.KIDING.domain.BoardGame;
-import com.demo.KIDING.dto.BookMarkRes;
-import com.demo.KIDING.dto.MyPageRes;
-import com.demo.KIDING.dto.SignInReq;
-import com.demo.KIDING.dto.SignUpReq;
+import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.BaseResponseStatus;
@@ -97,5 +94,15 @@ public class UserController {
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
+    }
+
+    @GetMapping("/search")
+    public BaseResponse<List<SearchRes>> searchItem(@RequestParam String word) {
+        try {
+            return new BaseResponse<>(userService.searchItem(word));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
     }
 }
