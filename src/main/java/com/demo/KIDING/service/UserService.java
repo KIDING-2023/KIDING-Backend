@@ -12,6 +12,8 @@ import com.demo.KIDING.repository.BookMarkRepository;
 import com.demo.KIDING.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,9 @@ public class UserService {
     private final BookMarkRepository bookMarkRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Transactional(rollbackFor = {Exception.class})
     public UserDtoRes signup(SignUpReq signUpReq) throws BaseException {
 
@@ -44,10 +49,11 @@ public class UserService {
         }
 
         try {
+            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
             User newUser = userRepository.save(User.builder()
                     .nickname(signUpReq.getNickname())
                     .phone(signUpReq.getPhone())
-                    .password(signUpReq.getPassword())
+                    .password(encodedPwd)
                     .activated(true)
                     .role(Role.USER)
                     .answers(0)
