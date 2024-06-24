@@ -17,16 +17,16 @@ logging:
 
 spring:
   jwt:
-    secret: ${{secrets.jwt}}
+    secret: ${secrets.jwt}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     #    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
     #    username: root
     #    password: 1234
-    url: ${{secrets.URL}}
-    username: ${{secrets.USERNAME}}
-    password: ${{secrets.PASSWORD}}
+    url: ${secrets.URL}
+    username: ${secrets.USERNAME}
+    password: ${secrets.PASSWORD}
   #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
