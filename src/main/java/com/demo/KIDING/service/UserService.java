@@ -1,9 +1,6 @@
 package com.demo.KIDING.service;
 
-import com.demo.KIDING.domain.BoardGame;
-import com.demo.KIDING.domain.BookMark;
-import com.demo.KIDING.domain.Role;
-import com.demo.KIDING.domain.User;
+import com.demo.KIDING.domain.*;
 import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -169,5 +166,38 @@ public class UserService {
                 .score(loginUser.getScore())
                 .players_with(loginUser.getPlayers_with())
                 .kiding_chip(loginUser.getKiding_chip()).build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<SearchRes> searchItem(String word) throws BaseException {
+        List<SearchRes> searchResList = new ArrayList<>();
+
+        // 보드게임 이름으로 검색
+        Optional<BoardGame> boardGame = boardGameRepository.searchByName(word);
+        boardGame.ifPresent(game -> {
+            SearchRes searchRes = SearchRes.builder()
+                    .entityTypeValue(EntityType.BOARD_GAME.toString())
+                    .id(game.getId())
+                    .name(game.getName())
+                    .build();
+            searchResList.add(searchRes);
+        });
+
+        // 닉네임으로 검색
+        Optional<User> user = userRepository.searchByUserNickname(word);
+        user.ifPresent(u -> {
+            SearchRes searchRes = SearchRes.builder()
+                    .entityTypeValue(EntityType.USER.toString())
+                    .id(u.getId())
+                    .name(u.getNickname())
+                    .image(u.getProfile())
+                    .build();
+            searchResList.add(searchRes);
+        });
+
+        if (searchResList.isEmpty()) {
+            throw new BaseException(NO_DATA_FOUND);
+        }
+        return searchResList;
     }
 }

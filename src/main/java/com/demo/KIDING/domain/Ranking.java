@@ -19,7 +19,7 @@ public class Ranking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int rank;
+    private int ranking_position;
 
     @OneToOne
     @JoinColumn(name = "user_id")

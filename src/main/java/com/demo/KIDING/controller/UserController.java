@@ -96,4 +96,14 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @GetMapping("/search")
+    public BaseResponse<List<SearchRes>> searchItem(@RequestParam String word) {
+        try {
+            return new BaseResponse<>(userService.searchItem(word));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
 }
