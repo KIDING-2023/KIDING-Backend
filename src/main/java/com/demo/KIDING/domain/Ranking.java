@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Table(name = "ranking")
 @Entity
 public class Ranking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

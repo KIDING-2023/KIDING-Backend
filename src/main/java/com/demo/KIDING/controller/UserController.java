@@ -1,10 +1,7 @@
 package com.demo.KIDING.controller;
 
 import com.demo.KIDING.domain.BoardGame;
-import com.demo.KIDING.dto.BookMarkRes;
-import com.demo.KIDING.dto.MyPageRes;
-import com.demo.KIDING.dto.SignInReq;
-import com.demo.KIDING.dto.SignUpReq;
+import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.BaseResponseStatus;
@@ -45,12 +42,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody SignInReq request) {
+    public BaseResponse login(@RequestBody SignInReq request) {
         try {
-            String token = userService.login(request);
-            return ResponseEntity.ok(token);
+            LoginDto loginDto = userService.login(request);
+            return new BaseResponse<>(loginDto);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+//            return ResponseEntity.status(401).body(e.getMessage());
+            return new BaseResponse<>(e.getMessage());
         }
     }
 

@@ -6,6 +6,7 @@ import com.demo.KIDING.domain.Role;
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
+import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
@@ -70,13 +71,19 @@ public class UserService {
     }
 
     @Transactional
-    public String login(SignInReq request) {
+    public LoginDto login(SignInReq request) {
         User user = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new IllegalArgumentException("가입된 닉네임이 아닙니다."));
         validateMatchedPassword(request.getPassword(), user.getPassword());
 
         String role = user.getRole().name();
-        return jwtTokenProvider.createToken(user.getNickname(), role);
+        String token = jwtTokenProvider.createToken(user.getNickname(), role);
+
+        return LoginDto.builder()
+                .id(user.getId())
+                .nickname(user.getNickname())
+                .token(token)
+                .build();
     }
 
     private void validateMatchedPassword(String rawPassword, String encodedPassword) {
