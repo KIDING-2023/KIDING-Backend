@@ -17,7 +17,7 @@ logging:
 
 spring:
   jwt:
-    secret: ${secrets.jwt}
+    secret: ${secrets.JWT}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
