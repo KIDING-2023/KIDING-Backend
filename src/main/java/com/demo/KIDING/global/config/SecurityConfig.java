@@ -33,16 +33,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/signup", "/login", "/boardgame").permitAll()
-                .antMatchers("/user").hasRole("USER")
+                .antMatchers("/signup", "/login").permitAll()
+                .antMatchers("/user", "/boardgame").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
-//                    .loginPage("/login")
-//                    .permitAll()
-//                .defaultSuccessUrl("/home", true)
-//                .failureUrl("/login?error=true")
-//                .and()
+
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 

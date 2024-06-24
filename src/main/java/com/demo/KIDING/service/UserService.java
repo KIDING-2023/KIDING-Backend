@@ -73,18 +73,18 @@ public class UserService {
     public String login(SignInReq request) {
         User user = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new IllegalArgumentException("가입된 닉네임이 아닙니다."));
-//        validateMatchedPassword(request.getPassword(), user.getPassword());
+        validateMatchedPassword(request.getPassword(), user.getPassword());
 
         String role = user.getRole().name();
         return jwtTokenProvider.createToken(user.getNickname(), role);
     }
 
-//    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
-//        // 비밀번호 검증 로직
-//        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-//        }
-//    }
+    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
+        // 비밀번호 검증 로직
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+    }
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {

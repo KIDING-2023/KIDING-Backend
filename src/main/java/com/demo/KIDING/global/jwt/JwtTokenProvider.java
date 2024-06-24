@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 
+import static com.demo.KIDING.domain.Role.USER;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
@@ -39,7 +41,7 @@ public class JwtTokenProvider {
 
     public String createToken(String nickname, String role) {
         Claims claims = Jwts.claims().setSubject(nickname);
-        claims.put("role", role);
+        claims.put("role", "ROLE_" + role);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)

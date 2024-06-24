@@ -37,6 +37,11 @@ public class User extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public void addUserAuthority() {
+        this.role = Role.USER;
+    }
+
+
     private String profile;
 
     private int answers;  // 누적 대답수

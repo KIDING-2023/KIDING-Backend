@@ -5,6 +5,6 @@ public enum Role {
     ADMIN,
     USER;
 
-    String role;
+
 
 }
