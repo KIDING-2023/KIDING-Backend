@@ -1,0 +1,42 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+
+logging:
+  level:
+    com:
+      amazons:
+        util:
+          EC2MetadataUtils: error
+
+spring:
+  jwt:
+    secret: ${secrets.JWT}
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
+    #    username: root
+    #    password: 1234
+    url: ${secrets.URL}
+    username: ${secrets.USERNAME}
+    password: ${secrets.PASSWORD}
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  main:
+    allow-circular-references: true
+
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create #create update none
+        globally_quoted_identifiers: true
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      show-sql: true
