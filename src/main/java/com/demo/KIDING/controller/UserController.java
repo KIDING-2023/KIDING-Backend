@@ -6,7 +6,6 @@ import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.BaseResponseStatus;
 import com.demo.KIDING.global.common.ValidErrorDetails;
-import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import java.util.List;
@@ -27,7 +25,6 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 public class UserController {
 
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     public BaseResponse signup(@RequestBody @Valid SignUpReq signUpReq, BindingResult bindingResult) {
@@ -55,23 +52,12 @@ public class UserController {
         }
     }
 
-//
-//    @PostMapping("/character/{userId}/{num}")
-//    public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num) {
-//
-//        try {
-//            userService.character(userId, num);
-//            return new BaseResponse<>(SUCCESS_TO_CHARACTER);
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//    }
 
+    @PostMapping("/character/{userId}/{num}")
+    public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num) {
 
-    @PostMapping("/character/{num}")
-    public BaseResponse character( @RequestHeader("accessToken") String accessToken, @PathVariable Integer num) {
         try {
-            userService.character(jwtTokenProvider.getUserNickname(accessToken), num);
+            userService.character(userId, num);
             return new BaseResponse<>(SUCCESS_TO_CHARACTER);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -106,6 +92,15 @@ public class UserController {
 
         try {
             return new BaseResponse<>(userService.getMyPage(userId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @GetMapping("/search")
+    public BaseResponse<List<SearchRes>> searchItem(@RequestParam String word) {
+        try {
+            return new BaseResponse<>(userService.searchItem(word));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

@@ -1,9 +1,6 @@
 package com.demo.KIDING.service;
 
-import com.demo.KIDING.domain.BoardGame;
-import com.demo.KIDING.domain.BookMark;
-import com.demo.KIDING.domain.Role;
-import com.demo.KIDING.domain.User;
+import com.demo.KIDING.domain.*;
 import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -18,13 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.demo.KIDING.global.common.BaseException.ErrorCode.INVALID_TOKEN;
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
 @Slf4j
@@ -96,12 +91,11 @@ public class UserService {
     }
 
     @Transactional
-    public void character(String nickname, Integer num) throws BaseException {
-//        if (!userRepository.existsById(userId)) {
-//            throw new BaseException(NO_USER_FOUND);
-//        }
-
-        User loginUser = userRepository.findByNickname(nickname).get();
+    public void character(Long userId, Integer num) throws BaseException {
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+        User loginUser = userRepository.findById(userId).get();
         log.info("유저 찾음");
         loginUser.setCharacter(num);
         log.info("캐릭터 설정을 완료하였습니다.");
@@ -174,6 +168,38 @@ public class UserService {
                 .kiding_chip(loginUser.getKiding_chip()).build();
     }
 
+    @Transactional(readOnly = true)
+    public List<SearchRes> searchItem(String word) throws BaseException {
+        List<SearchRes> searchResList = new ArrayList<>();
+
+        // 보드게임 이름으로 검색
+        Optional<BoardGame> boardGame = boardGameRepository.searchByName(word);
+        boardGame.ifPresent(game -> {
+            SearchRes searchRes = SearchRes.builder()
+                    .entityTypeValue(EntityType.BOARD_GAME.toString())
+                    .id(game.getId())
+                    .name(game.getName())
+                    .build();
+            searchResList.add(searchRes);
+        });
+
+        // 닉네임으로 검색
+        Optional<User> user = userRepository.searchByUserNickname(word);
+        user.ifPresent(u -> {
+            SearchRes searchRes = SearchRes.builder()
+                    .entityTypeValue(EntityType.USER.toString())
+                    .id(u.getId())
+                    .name(u.getNickname())
+                    .image(u.getProfile())
+                    .build();
+            searchResList.add(searchRes);
+        });
+
+        if (searchResList.isEmpty()) {
+            throw new BaseException(NO_DATA_FOUND);
+        }
+        return searchResList;
+    }
 
     // 전화번호로 닉네임 찾기
     @Transactional(readOnly = true)
