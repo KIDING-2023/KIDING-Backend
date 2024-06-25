@@ -111,7 +111,7 @@ public class UserController {
         try {
             return new BaseResponse<>(userService.findNickname(phone));
         } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
+            return new BaseResponse<>(e.getMessage());
         }
     }
 
@@ -120,7 +120,7 @@ public class UserController {
         try {
             return new BaseResponse<>(userService.findPassword(phone));
         } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
+            return new BaseResponse<>(e.getMessage());
         }
     }
 }

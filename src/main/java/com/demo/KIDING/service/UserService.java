@@ -205,7 +205,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public String findNickname(String phone) throws BaseException {
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new BaseException("User not found"));
+                .orElseThrow(() -> new BaseException("사용자를 찾을 수 없습니다."));
 
         return user.getNickname();
 
@@ -215,7 +215,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public String findPassword(String phone) throws BaseException {
         User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new BaseException("User not found"));
+                .orElseThrow(() -> new BaseException("사용자를 찾을 수 없습니다."));
 
         return user.getPassword();
 
