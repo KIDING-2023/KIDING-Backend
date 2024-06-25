@@ -33,12 +33,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/signup", "/login").permitAll()
-                .antMatchers("/user", "/boardgame").hasRole("USER")
+                .antMatchers("/signup", "/login", "/help/**").permitAll()
+                .antMatchers("/user/**", "/boardgame/**", "/character/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
-
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 

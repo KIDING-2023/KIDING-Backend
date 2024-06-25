@@ -18,11 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.demo.KIDING.global.common.BaseException.ErrorCode.INVALID_TOKEN;
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
 @Slf4j
@@ -94,11 +96,12 @@ public class UserService {
     }
 
     @Transactional
-    public void character(Long userId, Integer num) throws BaseException {
-        if (!userRepository.existsById(userId)) {
-            throw new BaseException(NO_USER_FOUND);
-        }
-        User loginUser = userRepository.findById(userId).get();
+    public void character(String nickname, Integer num) throws BaseException {
+//        if (!userRepository.existsById(userId)) {
+//            throw new BaseException(NO_USER_FOUND);
+//        }
+
+        User loginUser = userRepository.findByNickname(nickname).get();
         log.info("유저 찾음");
         loginUser.setCharacter(num);
         log.info("캐릭터 설정을 완료하였습니다.");
@@ -169,5 +172,26 @@ public class UserService {
                 .score(loginUser.getScore())
                 .players_with(loginUser.getPlayers_with())
                 .kiding_chip(loginUser.getKiding_chip()).build();
+    }
+
+
+    // 전화번호로 닉네임 찾기
+    @Transactional(readOnly = true)
+    public String findNickname(String phone) throws BaseException {
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new BaseException("User not found"));
+
+        return user.getNickname();
+
+    }
+
+    // 전화번호로 비밀번호로 찾기
+    @Transactional(readOnly = true)
+    public String findPassword(String phone) throws BaseException {
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new BaseException("User not found"));
+
+        return user.getPassword();
+
     }
 }
