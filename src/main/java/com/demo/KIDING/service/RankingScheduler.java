@@ -20,7 +20,6 @@ public class RankingScheduler {
         this.rankingService = rankingService;
     }
 
-    //
     @Scheduled(cron = "0 0 0 * * *")  // 매일 자정에 랭킹 초기화
     public void resetRanking() {
         rankingService.resetRanking();

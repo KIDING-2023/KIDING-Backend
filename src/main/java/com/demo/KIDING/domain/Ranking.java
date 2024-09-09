@@ -24,4 +24,5 @@ public class Ranking {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;  // 랭킹과 일대일 관계
+
 }

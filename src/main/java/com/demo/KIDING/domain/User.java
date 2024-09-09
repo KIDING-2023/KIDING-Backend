@@ -5,10 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,11 +41,6 @@ public class User extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    public void addUserAuthority() {
-        this.role = Role.USER;
-    }
-
 
     private String profile;
 

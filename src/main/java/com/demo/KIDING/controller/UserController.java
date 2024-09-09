@@ -1,23 +1,27 @@
 package com.demo.KIDING.controller;
 
-import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.dto.*;
+import com.demo.KIDING.global.auth.JwtProvider;
+import com.demo.KIDING.global.auth.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
-import com.demo.KIDING.global.common.BaseResponseStatus;
 import com.demo.KIDING.global.common.ValidErrorDetails;
 import com.demo.KIDING.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
+import static org.ietf.jgss.GSSException.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Slf4j
 @RestController
@@ -25,6 +29,8 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 public class UserController {
 
     private final UserService userService;
+    //private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/signup")
     public BaseResponse signup(@RequestBody @Valid SignUpReq signUpReq, BindingResult bindingResult) {
@@ -33,7 +39,6 @@ public class UserController {
             ValidErrorDetails errorDetails = new ValidErrorDetails();
             return new BaseResponse<>(REQUEST_ERROR, errorDetails.validateHandler(bindingResult));
         }
-
         try {
             return new BaseResponse<>(userService.signup(signUpReq));
         } catch (BaseException e) {
@@ -41,20 +46,29 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public BaseResponse login(@RequestBody SignInReq request) {
-        try {
-            LoginDto loginDto = userService.login(request);
-            return new BaseResponse<>(loginDto);
-        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.status(401).body(e.getMessage());
-            return new BaseResponse<>(e.getMessage());
-        }
+//    @PostMapping("/login")
+//    public BaseResponse login(@RequestBody SignInReq request) {
+//        try {
+//            LoginDto loginDto = userService.login(request);
+//            return new BaseResponse<>(loginDto);
+//        } catch (IllegalArgumentException e) {
+////            return ResponseEntity.status(401).body(e.getMessage());
+//            return new BaseResponse<>(e.getMessage());
+//        }
+//    }
+
+    @PostMapping("/signin")
+    public JwtToken signIn(@RequestBody SignInReq request) {
+        String nickname = request.getNickname();
+        String password = request.getPassword();
+        JwtToken jwtToken = userService.signIn(nickname, password);
+        log.info("request username = {}, password = {}", nickname, password);
+        log.info("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
+        return jwtToken;
     }
 
-
     @PostMapping("/character/{userId}/{num}")
-    public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num) {
+    public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num, @RequestHeader(value = "Authorization") String token) {
 
         try {
             userService.character(userId, num);
@@ -98,7 +112,12 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public BaseResponse<List<SearchRes>> searchItem(@RequestParam String word) {
+    public BaseResponse<List<SearchRes>> searchItem(@RequestHeader(value = "Authorization") String token, @RequestParam String word) {
+        log.info(token);
+        String role = jwtProvider.getUserInfo(token);
+        log.info(role);
+        LocalDate now = LocalDate.now();
+        log.info(now.toString());
         try {
             return new BaseResponse<>(userService.searchItem(word));
         } catch (BaseException e) {
@@ -115,6 +134,7 @@ public class UserController {
         }
     }
 
+    // 추후 삭제 예정
     @GetMapping("/help/findPassword")
     public BaseResponse findPassword(@RequestParam(value = "phone") String phone) {
         try {
@@ -123,4 +143,6 @@ public class UserController {
             return new BaseResponse<>(e.getMessage());
         }
     }
+
+
 }
