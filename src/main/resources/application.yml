@@ -21,14 +21,14 @@ spring:
     access-token-expiration-minutes: 60
 
   datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/kidinglocal
+#    username: root
+#    password: Si8zcqt5!
+    url: ${secrets.URL}
+    username: ${secrets.USERNAME}
+    password: ${secrets.PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/kidinglocal
-    username: root
-    password: Si8zcqt5!
-#    url: ${secrets.URL}
-#    username: ${secrets.USERNAME}
-#    password: ${secrets.PASSWORD}
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
     allow-circular-references: true

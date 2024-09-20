@@ -46,17 +46,6 @@ public class UserController {
         }
     }
 
-//    @PostMapping("/login")
-//    public BaseResponse login(@RequestBody SignInReq request) {
-//        try {
-//            LoginDto loginDto = userService.login(request);
-//            return new BaseResponse<>(loginDto);
-//        } catch (IllegalArgumentException e) {
-////            return ResponseEntity.status(401).body(e.getMessage());
-//            return new BaseResponse<>(e.getMessage());
-//        }
-//    }
-
     @PostMapping("/signin")
     public JwtToken signIn(@RequestBody SignInReq request) {
         String nickname = request.getNickname();
