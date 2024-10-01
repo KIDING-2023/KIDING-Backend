@@ -1,6 +1,5 @@
 package com.demo.KIDING.global.config;
 
-import com.demo.KIDING.global.jwt.JwtProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,7 +18,7 @@ public class CorsConfig {
         config.addAllowedHeader("*");  // 모든 header의 응답을 허용
         config.addAllowedMethod("*");  // 모든 post, get, delete, patch요청을 허용하겠다
 
-        config.addExposedHeader(JwtProperties.HEADER_STRING);   // react header 참조
+        config.addExposedHeader("Authorization");   // react header 참조
         source.registerCorsConfiguration("/api/**", config);  // "/api/**"로 오는 모든 설정은 config설정을 따른다
         return new CorsFilter(source);
 //        return new CorsFilter((CorsConfigurationSource) source);
