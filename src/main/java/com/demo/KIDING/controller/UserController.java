@@ -56,15 +56,25 @@ public class UserController {
         return jwtToken;
     }
 
-    @PostMapping("/character/{userId}/{num}")
-    public BaseResponse character(@PathVariable Long userId, @PathVariable Integer num, @RequestHeader(value = "Authorization") String token) {
+    @PostMapping("/character/{num}")
+    public BaseResponse character(@PathVariable Integer num, @RequestHeader(value = "Authorization") String accessToken) {
 
-        try {
-            userService.character(userId, num);
-            return new BaseResponse<>(SUCCESS_TO_CHARACTER);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
+        String nickname = String.valueOf(jwtProvider.parseClaims(accessToken));
+        System.out.println(nickname);
+
+//            userService.character(userId, num);
+        return new BaseResponse<>(SUCCESS_TO_CHARACTER);
+
+
+//        try {
+//            String nickname = String.valueOf(jwtProvider.parseClaims(accessToken));
+//            System.out.println(nickname);
+//
+////            userService.character(userId, num);
+//            return new BaseResponse<>(SUCCESS_TO_CHARACTER);
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
     }
 
 

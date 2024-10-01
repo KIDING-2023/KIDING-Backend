@@ -56,11 +56,11 @@ public class UserService {
         }
 
         try {
-//            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
+            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
             User newUser = userRepository.save(User.builder()
                     .nickname(signUpReq.getNickname())
                     .phone(signUpReq.getPhone())
-                    .password("1234")
+                    .password(encodedPwd)
                     .activated(true)
                     .role(ROLE_USER)
                     .answers(0)
