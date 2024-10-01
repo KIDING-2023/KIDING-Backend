@@ -6,7 +6,6 @@ import org.hibernate.type.EntityType;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class SearchRes<T> {
 

@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNickname(String nickname);
 
-    User findTopByOrderByAnswersAsc();
+    User findTopByOrderByAnswersDesc();
 
     @Query(value = "SELECT u.id, u.nickname, u.answers FROM user u INNER JOIN game_user gu ON u.id = gu.user_id ORDER BY u.answers DESC", nativeQuery = true)
     Optional<List<RankingRes>> findRankUser();
@@ -27,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // JPQL
     @Query("SELECT u FROM User u WHERE u.nickname LIKE %:name%")
     Optional<User> searchByUserNickname(@Param("name")String name);
+
+    Optional<List<User>> findByNicknameContaining(String nickname);
+
 }

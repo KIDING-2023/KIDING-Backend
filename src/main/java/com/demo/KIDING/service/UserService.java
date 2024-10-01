@@ -4,14 +4,14 @@ import com.demo.KIDING.domain.*;
 import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
-import com.demo.KIDING.global.jwt.JwtTokenProvider;
+//import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
+import com.demo.KIDING.repository.FriendsRepository;
 import com.demo.KIDING.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +28,13 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FriendsRepository friendsRepository;
     private final BoardGameRepository boardGameRepository;
     private final BookMarkRepository bookMarkRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+//    private final JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
 
     @Transactional(rollbackFor = {Exception.class})
     public UserDtoRes signup(SignUpReq signUpReq) throws BaseException {
@@ -47,11 +48,11 @@ public class UserService {
         }
 
         try {
-            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
+//            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
             User newUser = userRepository.save(User.builder()
                     .nickname(signUpReq.getNickname())
                     .phone(signUpReq.getPhone())
-                    .password(encodedPwd)
+                    .password("1234")
                     .activated(true)
                     .role(Role.USER)
                     .answers(0)
@@ -67,28 +68,28 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public LoginDto login(SignInReq request) {
-        User user = userRepository.findByNickname(request.getNickname())
-                .orElseThrow(() -> new IllegalArgumentException("가입된 닉네임이 아닙니다."));
-        validateMatchedPassword(request.getPassword(), user.getPassword());
-
-        String role = user.getRole().name();
-        String token = jwtTokenProvider.createToken(user.getNickname(), role);
-
-        return LoginDto.builder()
-                .id(user.getId())
-                .nickname(user.getNickname())
-                .token(token)
-                .build();
-    }
-
-    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
-        // 비밀번호 검증 로직
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-    }
+//    @Transactional
+//    public LoginDto login(SignInReq request) {
+//        User user = userRepository.findByNickname(request.getNickname())
+//                .orElseThrow(() -> new IllegalArgumentException("가입된 닉네임이 아닙니다."));
+//        validateMatchedPassword(request.getPassword(), user.getPassword());
+//
+//        String role = user.getRole().name();
+//        String token = jwtTokenProvider.createToken(user.getNickname(), role);
+//
+//        return LoginDto.builder()
+//                .id(user.getId())
+//                .nickname(user.getNickname())
+//                .token(token)
+//                .build();
+//    }
+//
+//    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
+//        // 비밀번호 검증 로직
+//        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
+//    }
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {
@@ -124,7 +125,7 @@ public class UserService {
                 .build());
 
         log.info(userById.get().getNickname() + " 사용자가 `" + gameById.get().getName() + "` 보드게임을 즐겨찾기 설정했습니다.");
-        
+
     }
     @Transactional(readOnly = true)
     public List<BookMarkRes> getAllBookMark(Long userId) throws BaseException {
@@ -173,31 +174,62 @@ public class UserService {
         List<SearchRes> searchResList = new ArrayList<>();
 
         // 보드게임 이름으로 검색
-        Optional<BoardGame> boardGame = boardGameRepository.searchByName(word);
-        boardGame.ifPresent(game -> {
-            SearchRes searchRes = SearchRes.builder()
-                    .entityTypeValue(EntityType.BOARD_GAME.toString())
-                    .id(game.getId())
-                    .name(game.getName())
-                    .build();
-            searchResList.add(searchRes);
-        });
+        Optional<List<BoardGame>> optionalBoardGames  = boardGameRepository.findByNameContaining(word);
+        if (optionalBoardGames.isPresent()) {
+            List<BoardGame> boardGames = optionalBoardGames.get();
+            for (BoardGame game : boardGames) {
+                SearchRes searchRes = SearchRes.builder()
+                        .entityTypeValue(EntityType.BOARD_GAME.toString())
+                        .id(game.getId())
+                        .name(game.getName())
+                        .build();
+                searchResList.add(searchRes);
+            }
+        }
 
         // 닉네임으로 검색
-        Optional<User> user = userRepository.searchByUserNickname(word);
-        user.ifPresent(u -> {
-            SearchRes searchRes = SearchRes.builder()
-                    .entityTypeValue(EntityType.USER.toString())
-                    .id(u.getId())
-                    .name(u.getNickname())
-                    .image(u.getProfile())
-                    .build();
-            searchResList.add(searchRes);
-        });
+        Optional<List<User>> optionalUsers = userRepository.findByNicknameContaining(word);
+        if (optionalUsers.isPresent()) {
+            List<User> users = optionalUsers.get();
+            for (User u : users) {
+                SearchRes searchRes = SearchRes.builder()
+                        .entityTypeValue(EntityType.USER.toString())
+                        .id(u.getId())
+                        .name(u.getNickname())
+                        .image(u.getProfile())
+                        .build();
+                searchResList.add(searchRes);
+            }
+        }
 
         if (searchResList.isEmpty()) {
             throw new BaseException(NO_DATA_FOUND);
         }
         return searchResList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyFriendRes> getFriendsList(Long userId) throws BaseException {
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+
+        List<Friends> friends = friendsRepository.findByFromUserIdAndIsAcceptedTrue(userId);
+        List<MyFriendRes> myFriendResList = friends.stream()
+                .map(friend -> {
+                    User toUser = friend.getToUser();
+                    return MyFriendRes.builder()
+                            .nickname(toUser.getNickname())
+                            .profile(toUser.getProfile())
+                            .score(toUser.getScore())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return myFriendResList;
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.searchByUserNickname(username).get();
     }
 }

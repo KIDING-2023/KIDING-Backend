@@ -40,17 +40,17 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-
-    @PostMapping("/login")
-    public BaseResponse login(@RequestBody SignInReq request) {
-        try {
-            LoginDto loginDto = userService.login(request);
-            return new BaseResponse<>(loginDto);
-        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.status(401).body(e.getMessage());
-            return new BaseResponse<>(e.getMessage());
-        }
-    }
+//
+//    @PostMapping("/login")
+//    public BaseResponse login(@RequestBody SignInReq request) {
+//        try {
+//            LoginDto loginDto = userService.login(request);
+//            return new BaseResponse<>(loginDto);
+//        } catch (IllegalArgumentException e) {
+////            return ResponseEntity.status(401).body(e.getMessage());
+//            return new BaseResponse<>(e.getMessage());
+//        }
+//    }
 
 
     @PostMapping("/character/{userId}/{num}")
@@ -105,5 +105,15 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
 
+    }
+
+    // 친구 리스트 확인
+    @GetMapping("/{userId}/friends")
+    public BaseResponse<List<MyFriendRes>> friendsList(@PathVariable Long userId) {
+        try {
+            return new BaseResponse<>(userService.getFriendsList(userId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 }
