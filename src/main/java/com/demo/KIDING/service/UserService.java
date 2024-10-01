@@ -2,8 +2,13 @@ package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.*;
 import com.demo.KIDING.dto.*;
+import com.demo.KIDING.global.auth.JwtProvider;
+import com.demo.KIDING.global.auth.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
+<<<<<<< HEAD
 import com.demo.KIDING.global.common.BaseResponse;
+=======
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 //import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
@@ -12,14 +17,23 @@ import com.demo.KIDING.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
+=======
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static com.demo.KIDING.domain.Role.ROLE_USER;
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
 @Slf4j
@@ -31,7 +45,12 @@ public class UserService {
     private final FriendsRepository friendsRepository;
     private final BoardGameRepository boardGameRepository;
     private final BookMarkRepository bookMarkRepository;
+<<<<<<< HEAD
 //    private final JwtTokenProvider jwtTokenProvider;
+=======
+    private final JwtProvider jwtProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 
 //    @Autowired
 //    PasswordEncoder passwordEncoder;
@@ -54,7 +73,7 @@ public class UserService {
                     .phone(signUpReq.getPhone())
                     .password("1234")
                     .activated(true)
-                    .role(Role.USER)
+                    .role(ROLE_USER)
                     .answers(0)
                     .score(0)
                     .players_with(0)
@@ -68,6 +87,7 @@ public class UserService {
         }
     }
 
+<<<<<<< HEAD
 //    @Transactional
 //    public LoginDto login(SignInReq request) {
 //        User user = userRepository.findByNickname(request.getNickname())
@@ -90,6 +110,50 @@ public class UserService {
 //            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 //        }
 //    }
+=======
+
+    @Transactional
+    public JwtToken signIn(String nickname, String password) {
+        // 1. username + password 를 기반으로 Authentication 객체 생성
+        // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(nickname, password);
+
+        try {
+            // 2. 실제 검증. authenticate() 메서드를 통해 요청된 Member 에 대한 검증 진행
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+            System.out.println("=============test3===============");
+
+            // 3. 인증 정보를 기반으로 JWT 토큰 생성
+            JwtToken jwtToken = jwtProvider.generateToken(authentication);
+
+            System.out.println("jwt: " + jwtToken);
+
+            return jwtToken;
+        } catch (BadCredentialsException e) {
+            // 잘못된 자격 증명 처리
+            System.err.println("Invalid credentials: " + e.getMessage());
+            throw new RuntimeException("Invalid credentials provided"); // 사용자에게 적절한 메시지 반환
+        } catch (AuthenticationException e) {
+            // 인증 관련 다른 예외 처리
+            System.err.println("Authentication error: " + e.getMessage());
+            throw new RuntimeException("Authentication failed: " + e.getMessage());
+        } catch (Exception e) {
+            // 기타 예외 처리
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
+        // 비밀번호 검증 로직
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {
@@ -127,6 +191,7 @@ public class UserService {
         log.info(userById.get().getNickname() + " 사용자가 `" + gameById.get().getName() + "` 보드게임을 즐겨찾기 설정했습니다.");
 
     }
+
     @Transactional(readOnly = true)
     public List<BookMarkRes> getAllBookMark(Long userId) throws BaseException {
         if (!userRepository.existsById(userId)) {
@@ -208,6 +273,7 @@ public class UserService {
         return searchResList;
     }
 
+<<<<<<< HEAD
     @Transactional(readOnly = true)
     public List<MyFriendRes> getFriendsList(Long userId) throws BaseException {
         if (!userRepository.existsById(userId)) {
@@ -231,5 +297,24 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.searchByUserNickname(username).get();
+=======
+    // 전화번호로 닉네임 찾기
+    @Transactional(readOnly = true)
+    public String findNickname(String phone) throws BaseException {
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new BaseException("사용자를 찾을 수 없습니다."));
+
+        return user.getNickname();
+
+    }
+
+    // 전화번호로 비밀번호로 찾기 (추후 수정)
+    @Transactional(readOnly = true)
+    public String findPassword(String phone) throws BaseException {
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new BaseException("사용자를 찾을 수 없습니다."));
+
+        return user.getPassword();
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
     }
 }

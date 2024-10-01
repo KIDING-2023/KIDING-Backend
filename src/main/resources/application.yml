@@ -17,16 +17,22 @@ logging:
 
 spring:
   jwt:
-    secret: ${secrets.JWT}
+    secret: uFZyGhiQblrsDuPoEV9kigecxOyUeTpDUDcEgbKIMKZy3o8CmW
+    access-token-expiration-minutes: 60
 
   datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
+<<<<<<< HEAD
 #    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
 #    username: root
 #    password: 1234
-    url: ${secrets.URL}
-    username: ${secrets.USERNAME}
-    password: ${secrets.PASSWORD}
+#    url: jdbc:mysql://localhost:3306/kidinglocal
+#    username: root
+#    password: Si8zcqt5!
+    url: jdbc:mysql://kiding.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding?autoReconnect=true
+    username: admin
+    password: Abcd1234
+
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
