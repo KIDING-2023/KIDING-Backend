@@ -38,7 +38,7 @@ public class RankingService {
 
     public RankingRes getTopUserByAnswers() throws BaseException {
 
-        User rankingUser = userRepository.findTopByOrderByAnswersAsc();
+        User rankingUser = userRepository.findTopByOrderByAnswersDesc();
         return RankingRes.from(rankingUser);
     }
 

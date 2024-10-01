@@ -114,6 +114,16 @@ public class UserController {
         }
     }
 
+    // 친구 리스트 확인
+    @GetMapping("/{userId}/friends")
+    public BaseResponse<List<MyFriendRes>> friendsList(@PathVariable Long userId) {
+        try {
+            return new BaseResponse<>(userService.getFriendsList(userId));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     @GetMapping("/help/findNickname")
     public BaseResponse findNickname(@RequestParam(value = "phone") String phone) {
         try {
@@ -132,6 +142,4 @@ public class UserController {
             return new BaseResponse<>(e.getMessage());
         }
     }
-
-
 }

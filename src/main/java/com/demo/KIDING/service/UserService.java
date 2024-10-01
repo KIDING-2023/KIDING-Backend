@@ -5,19 +5,27 @@ import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.auth.JwtProvider;
 import com.demo.KIDING.global.auth.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
+<<<<<<< HEAD
+import com.demo.KIDING.global.common.BaseResponse;
+=======
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 //import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
+import com.demo.KIDING.repository.FriendsRepository;
 import com.demo.KIDING.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
+=======
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +42,18 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FriendsRepository friendsRepository;
     private final BoardGameRepository boardGameRepository;
     private final BookMarkRepository bookMarkRepository;
+<<<<<<< HEAD
+//    private final JwtTokenProvider jwtTokenProvider;
+=======
     private final JwtProvider jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
 
     @Transactional(rollbackFor = {Exception.class})
     public UserDtoRes signup(SignUpReq signUpReq) throws BaseException {
@@ -54,11 +67,11 @@ public class UserService {
         }
 
         try {
-            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
+//            String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
             User newUser = userRepository.save(User.builder()
                     .nickname(signUpReq.getNickname())
                     .phone(signUpReq.getPhone())
-                    .password(encodedPwd)
+                    .password("1234")
                     .activated(true)
                     .role(ROLE_USER)
                     .answers(0)
@@ -74,6 +87,30 @@ public class UserService {
         }
     }
 
+<<<<<<< HEAD
+//    @Transactional
+//    public LoginDto login(SignInReq request) {
+//        User user = userRepository.findByNickname(request.getNickname())
+//                .orElseThrow(() -> new IllegalArgumentException("가입된 닉네임이 아닙니다."));
+//        validateMatchedPassword(request.getPassword(), user.getPassword());
+//
+//        String role = user.getRole().name();
+//        String token = jwtTokenProvider.createToken(user.getNickname(), role);
+//
+//        return LoginDto.builder()
+//                .id(user.getId())
+//                .nickname(user.getNickname())
+//                .token(token)
+//                .build();
+//    }
+//
+//    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
+//        // 비밀번호 검증 로직
+//        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
+//    }
+=======
 
     @Transactional
     public JwtToken signIn(String nickname, String password) {
@@ -116,6 +153,7 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {
@@ -151,7 +189,7 @@ public class UserService {
                 .build());
 
         log.info(userById.get().getNickname() + " 사용자가 `" + gameById.get().getName() + "` 보드게임을 즐겨찾기 설정했습니다.");
-        
+
     }
 
     @Transactional(readOnly = true)
@@ -201,27 +239,33 @@ public class UserService {
         List<SearchRes> searchResList = new ArrayList<>();
 
         // 보드게임 이름으로 검색
-        Optional<BoardGame> boardGame = boardGameRepository.searchByName(word);
-        boardGame.ifPresent(game -> {
-            SearchRes searchRes = SearchRes.builder()
-                    .entityTypeValue(EntityType.BOARD_GAME.toString())
-                    .id(game.getId())
-                    .name(game.getName())
-                    .build();
-            searchResList.add(searchRes);
-        });
+        Optional<List<BoardGame>> optionalBoardGames  = boardGameRepository.findByNameContaining(word);
+        if (optionalBoardGames.isPresent()) {
+            List<BoardGame> boardGames = optionalBoardGames.get();
+            for (BoardGame game : boardGames) {
+                SearchRes searchRes = SearchRes.builder()
+                        .entityTypeValue(EntityType.BOARD_GAME.toString())
+                        .id(game.getId())
+                        .name(game.getName())
+                        .build();
+                searchResList.add(searchRes);
+            }
+        }
 
         // 닉네임으로 검색
-        Optional<User> user = userRepository.searchByUserNickname(word);
-        user.ifPresent(u -> {
-            SearchRes searchRes = SearchRes.builder()
-                    .entityTypeValue(EntityType.USER.toString())
-                    .id(u.getId())
-                    .name(u.getNickname())
-                    .image(u.getProfile())
-                    .build();
-            searchResList.add(searchRes);
-        });
+        Optional<List<User>> optionalUsers = userRepository.findByNicknameContaining(word);
+        if (optionalUsers.isPresent()) {
+            List<User> users = optionalUsers.get();
+            for (User u : users) {
+                SearchRes searchRes = SearchRes.builder()
+                        .entityTypeValue(EntityType.USER.toString())
+                        .id(u.getId())
+                        .name(u.getNickname())
+                        .image(u.getProfile())
+                        .build();
+                searchResList.add(searchRes);
+            }
+        }
 
         if (searchResList.isEmpty()) {
             throw new BaseException(NO_DATA_FOUND);
@@ -229,6 +273,31 @@ public class UserService {
         return searchResList;
     }
 
+<<<<<<< HEAD
+    @Transactional(readOnly = true)
+    public List<MyFriendRes> getFriendsList(Long userId) throws BaseException {
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+
+        List<Friends> friends = friendsRepository.findByFromUserIdAndIsAcceptedTrue(userId);
+        List<MyFriendRes> myFriendResList = friends.stream()
+                .map(friend -> {
+                    User toUser = friend.getToUser();
+                    return MyFriendRes.builder()
+                            .nickname(toUser.getNickname())
+                            .profile(toUser.getProfile())
+                            .score(toUser.getScore())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return myFriendResList;
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.searchByUserNickname(username).get();
+=======
     // 전화번호로 닉네임 찾기
     @Transactional(readOnly = true)
     public String findNickname(String phone) throws BaseException {
@@ -246,5 +315,6 @@ public class UserService {
                 .orElseThrow(() -> new BaseException("사용자를 찾을 수 없습니다."));
 
         return user.getPassword();
+>>>>>>> 7517120e0ceeebcddebb97b4b9e8a83fd0bd2a4e
     }
 }

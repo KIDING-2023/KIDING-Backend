@@ -55,7 +55,7 @@ public class BoardGameController {
         }
     }
 
-    @GetMapping("/boardgame/{userId}/recent")
+    @GetMapping("/boardgames/{userId}/recent")
     public BaseResponse<List<RecentGameRes>> boardGameRecent(@PathVariable Long userId) {
 
         try {
