@@ -1,12 +1,15 @@
 package com.demo.KIDING.controller;
 
+import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.auth.JwtProvider;
 import com.demo.KIDING.global.auth.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.ValidErrorDetails;
+import com.demo.KIDING.repository.UserRepository;
 import com.demo.KIDING.service.UserService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,7 @@ import javax.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 import static org.ietf.jgss.GSSException.UNAUTHORIZED;
@@ -29,6 +33,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     //private final JwtTokenProvider jwtTokenProvider;
     private final JwtProvider jwtProvider;
 
@@ -58,23 +63,15 @@ public class UserController {
 
     @PostMapping("/character/{num}")
     public BaseResponse character(@PathVariable Integer num, @RequestHeader(value = "Authorization") String accessToken) {
-
-        String nickname = String.valueOf(jwtProvider.parseClaims(accessToken));
-        System.out.println(nickname);
-
-//            userService.character(userId, num);
-        return new BaseResponse<>(SUCCESS_TO_CHARACTER);
-
-
-//        try {
-//            String nickname = String.valueOf(jwtProvider.parseClaims(accessToken));
-//            System.out.println(nickname);
-//
-////            userService.character(userId, num);
-//            return new BaseResponse<>(SUCCESS_TO_CHARACTER);
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
+        try {
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            userService.character(optionalUser.get().getId(), num);
+            return new BaseResponse<>(SUCCESS_TO_CHARACTER);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 

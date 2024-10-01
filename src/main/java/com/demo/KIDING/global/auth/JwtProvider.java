@@ -45,6 +45,7 @@ public class JwtProvider {
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
+                .claim("nickname", authentication.getName())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -106,6 +107,9 @@ public class JwtProvider {
     // accessToken
     public Claims parseClaims(String accessToken) {
         try {
+            if (accessToken.startsWith("Bearer ")) {
+                accessToken = accessToken.substring(7); // 'Bearer ' 부분 제거
+            }
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
