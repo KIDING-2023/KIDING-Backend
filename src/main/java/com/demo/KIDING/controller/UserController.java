@@ -2,8 +2,8 @@ package com.demo.KIDING.controller;
 
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.*;
-import com.demo.KIDING.global.auth.JwtProvider;
-import com.demo.KIDING.global.auth.JwtToken;
+import com.demo.KIDING.global.jwt.JwtProvider;
+import com.demo.KIDING.global.jwt.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.ValidErrorDetails;
@@ -12,8 +12,7 @@ import com.demo.KIDING.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
-import static org.ietf.jgss.GSSException.UNAUTHORIZED;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Slf4j
 @RestController
@@ -34,7 +31,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
-    //private final JwtTokenProvider jwtTokenProvider;
     private final JwtProvider jwtProvider;
 
     @PostMapping("/signup")
@@ -121,15 +117,15 @@ public class UserController {
         }
     }
 
-    // 친구 리스트 확인
-    @GetMapping("/{userId}/friends")
-    public BaseResponse<List<MyFriendRes>> friendsList(@PathVariable Long userId) {
-        try {
-            return new BaseResponse<>(userService.getFriendsList(userId));
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
-    }
+//    // 친구 리스트 확인
+//    @GetMapping("/{userId}/friends")
+//    public BaseResponse<List<MyFriendRes>> friendsList(@PathVariable Long userId) {
+//        try {
+//            return new BaseResponse<>(userService.getFriendsList(userId));
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//    }
 
     @GetMapping("/help/findNickname")
     public BaseResponse findNickname(@RequestParam(value = "phone") String phone) {
@@ -140,13 +136,10 @@ public class UserController {
         }
     }
 
-    // 추후 삭제 예정
-    @GetMapping("/help/findPassword")
-    public BaseResponse findPassword(@RequestParam(value = "phone") String phone) {
-        try {
-            return new BaseResponse<>(userService.findPassword(phone));
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getMessage());
-        }
+    @PostMapping("/help/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestParam String phoneNumber, @RequestParam String newPassword) throws BaseException {
+        userService.resetPassword(phoneNumber, newPassword);
+        return ResponseEntity.ok("비밀번호가 재설정되었습니다.");
     }
+
 }

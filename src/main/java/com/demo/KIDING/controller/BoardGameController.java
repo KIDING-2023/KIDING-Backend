@@ -78,7 +78,7 @@ public class BoardGameController {
 
     }
 
-    @GetMapping("/today/ranking") // 오늘의 랭킹 조회
+    @GetMapping("/ranking/today") // 오늘의 랭킹 조회
     public BaseResponse<RankingRes> todayRanking() {
 
         try {
@@ -88,16 +88,6 @@ public class BoardGameController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-
-    // 전체 랭킹 조회
-//    @GetMapping("/ranking/all")
-//    public BaseResponse<List<String>> viewRanking() {
-//        try {
-//            return new BaseResponse<>(rankingService.getRanking());
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//    }
 
     @GetMapping("/ranking/all")
     public List<String> viewRanking() {

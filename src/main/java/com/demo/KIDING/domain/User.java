@@ -1,9 +1,6 @@
 package com.demo.KIDING.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +16,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 @Getter
+@Setter
 @Table(name = "user")
 @Entity
 public class User extends BaseEntity{

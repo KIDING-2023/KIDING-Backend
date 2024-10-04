@@ -1,4 +1,4 @@
-package com.demo.KIDING.global.auth;
+package com.demo.KIDING.global.jwt;
 
 import lombok.*;
 

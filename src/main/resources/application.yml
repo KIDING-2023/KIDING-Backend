@@ -7,7 +7,6 @@ server:
       enabled: true
       force: true
 
-
 logging:
   level:
     com:
@@ -20,30 +19,30 @@ spring:
     secret: uFZyGhiQblrsDuPoEV9kigecxOyUeTpDUDcEgbKIMKZy3o8CmW
     access-token-expiration-minutes: 60
 
+  # 전화번호 인증용
+  sms:
+    api-key: NCSATBBMNUGXSPJW
+    api-secret: ZLKYK9COJVVPHUD6QSOGAHVYZ8XGAWSS
+    provider: https://api.coolsms.co.kr
+    sender: 01099709759
+
   datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-<<<<<<< HEAD
-#    url: jdbc:mysql://localhost:3307/kidinglocal?serverTimezone=Asia/Seoul
-#    username: root
-#    password: 1234
 #    url: jdbc:mysql://localhost:3306/kidinglocal
 #    username: root
 #    password: Si8zcqt5!
     url: jdbc:mysql://kiding.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/kiding?autoReconnect=true
     username: admin
     password: Abcd1234
-
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
     allow-circular-references: true
 
   jpa:
-    hibernate:
-      ddl-auto: update #create update none
     properties:
       hibernate:
-#        ddl-auto: create #create update none
+        ddl-auto: create #create update none
         globally_quoted_identifiers: true
         naming:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

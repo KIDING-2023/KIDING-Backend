@@ -1,7 +1,7 @@
 package com.demo.KIDING.global.config;
 
-import com.demo.KIDING.global.auth.JwtFilter;
-import com.demo.KIDING.global.auth.JwtProvider;
+import com.demo.KIDING.global.jwt.JwtFilter;
+import com.demo.KIDING.global.jwt.JwtProvider;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    //private final JwtTokenProvider jwtTokenProvider; 두 개 있으면 순환 의존성 발생
     private final JwtProvider jwtProvider;
-    //private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -33,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/signup", "/login", "/help/**", "/signin","/tokenTest").permitAll()
+                .antMatchers("/signup", "/help/**", "/signin", "/character/**", "/bookmark/**","/tokenTest").permitAll()
                 .antMatchers("/user/**", "/boardgame/**", "/character/**", "/test", "/search", "/ranking/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()

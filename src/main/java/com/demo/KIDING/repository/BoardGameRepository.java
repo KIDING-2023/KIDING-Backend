@@ -18,7 +18,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     // JPQL
 //    @Query("SELECT b FROM BoardGame b WHERE b.name LIKE %:name%")
-//    Optional<BoardGame> searchByName(@Param("name")String name);
+    Optional<BoardGame> searchByName(@Param("name")String name);
 
     Optional<List<BoardGame>> findByNameContaining(String name);
 

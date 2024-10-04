@@ -157,7 +157,7 @@ public class BoardGameService {
             throw new BaseException(NO_GAME_FOUND);
         }
 
-        // gameUser에 업데이트, 키딩칩 & 누적 대답수 +1, boargame player +1
+        // gameUser에 업데이트, 키딩칩 & 누적 대답수 +1, boardgame player +1
         gameUserRepository.save(GameUser.builder()
                 .user(userRepository.findById(userId).get())
                 .boardGame(boardGameRepository.findByName(gameName).get()).build());
@@ -182,4 +182,14 @@ public class BoardGameService {
         return rankingRes.get().get(0);
 
     }
+//
+//    public int rollDice() {
+//        if (boardGameRepository.count == 0) {
+//            return 1; // 플레이한 횟수가 0이면 항상 1 반환
+//        }
+//
+//        // 주사위 눈을 랜덤으로 결정 (1부터 6까지)
+//        Random random = new Random();
+//        return random.nextInt(6) + 1;
+//    }
 }
