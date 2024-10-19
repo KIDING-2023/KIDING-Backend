@@ -56,9 +56,9 @@ public class User extends BaseEntity{
     @OneToOne(mappedBy = "user")
     private Ranking ranking;
 
-    public void playGame() {
+    public void playGame(Integer count) {
         this.answers += 1;
-        this.kiding_chip += 1;
+        this.kiding_chip += count;
     }
 
     public void setCharacter(Integer num) {

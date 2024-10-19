@@ -8,6 +8,6 @@ import lombok.*;
 @RequiredArgsConstructor
 public class GamePlayReq {
 
-    private String name;
-    private Long userId;
+    private Long boardGameId;
+    private Integer count;
 }

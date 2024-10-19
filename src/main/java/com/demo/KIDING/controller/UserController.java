@@ -41,6 +41,7 @@ public class UserController {
             return new BaseResponse<>(REQUEST_ERROR, errorDetails.validateHandler(bindingResult));
         }
         try {
+            System.out.println("회원가입 요청");
             return new BaseResponse<>(userService.signup(signUpReq));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -71,11 +72,14 @@ public class UserController {
     }
 
 
-    @PostMapping("/bookmark/{userId}/{boardgameId}")
-    public BaseResponse bookmark(@PathVariable Long userId, @PathVariable Long boardgameId) {
+    @PostMapping("/bookmark/{boardgameId}")
+    public BaseResponse bookmark(@PathVariable Long boardgameId, @RequestHeader(value = "Authorization") String accessToken) {
 
         try {
-            userService.bookmark(userId, boardgameId);
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            userService.bookmark(optionalUser.get().getId(), boardgameId);
             return new BaseResponse<>(BOOKMARK_REQUESTED);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -83,11 +87,14 @@ public class UserController {
 
     }
 
-    @GetMapping("/bookmark/{userId}")
-    public BaseResponse<List<BookMarkRes>> getAllBookMark(@PathVariable Long userId) {
+    @GetMapping("/bookmark")
+    public BaseResponse<List<BookMarkRes>> getAllBookMark(@RequestHeader(value = "Authorization") String accessToken) {
 
         try {
-            return new BaseResponse(userService.getAllBookMark(userId));
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            return new BaseResponse(userService.getAllBookMark(optionalUser.get().getId()));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
