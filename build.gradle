@@ -8,7 +8,7 @@ group = 'com.demo'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '11'
+	sourceCompatibility = "15"
 }
 
 configurations {
@@ -39,6 +39,9 @@ dependencies {
 
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+	implementation 'net.nurigo:sdk:4.3.0'
+
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:JJWT_RELEASE_VERSION'
 
 	// stomp 설정
@@ -55,3 +58,4 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+targetCompatibility = JavaVersion.VERSION_15

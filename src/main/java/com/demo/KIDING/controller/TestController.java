@@ -1,6 +1,6 @@
 package com.demo.KIDING.controller;
 
-import com.demo.KIDING.global.auth.JwtProvider;
+import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

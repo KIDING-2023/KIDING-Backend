@@ -2,13 +2,14 @@ package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.*;
 import com.demo.KIDING.dto.*;
-import com.demo.KIDING.global.auth.JwtProvider;
-import com.demo.KIDING.global.auth.JwtToken;
+import com.demo.KIDING.global.jwt.JwtProvider;
+import com.demo.KIDING.global.jwt.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
+//import com.demo.KIDING.global.jwt.JwtTokenProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
-import com.demo.KIDING.repository.FriendsRepository;
 import com.demo.KIDING.repository.UserRepository;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.demo.KIDING.domain.Role.ROLE_USER;
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
@@ -35,7 +35,6 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final FriendsRepository friendsRepository;
     private final BoardGameRepository boardGameRepository;
     private final BookMarkRepository bookMarkRepository;
     private final JwtProvider jwtProvider;
@@ -76,6 +75,7 @@ public class UserService {
         }
     }
 
+
     @Transactional
     public JwtToken signIn(String nickname, String password) {
         // 1. username + password 를 기반으로 Authentication 객체 생성
@@ -111,12 +111,12 @@ public class UserService {
         }
     }
 
-    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
-        // 비밀번호 검증 로직
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-    }
+//    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
+//        // 비밀번호 검증 로직
+//        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+//        }
+//    }
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {
@@ -152,7 +152,7 @@ public class UserService {
                 .build());
 
         log.info(userById.get().getNickname() + " 사용자가 `" + gameById.get().getName() + "` 보드게임을 즐겨찾기 설정했습니다.");
-
+        
     }
 
     @Transactional(readOnly = true)
@@ -202,33 +202,27 @@ public class UserService {
         List<SearchRes> searchResList = new ArrayList<>();
 
         // 보드게임 이름으로 검색
-        Optional<List<BoardGame>> optionalBoardGames  = boardGameRepository.findByNameContaining(word);
-        if (optionalBoardGames.isPresent()) {
-            List<BoardGame> boardGames = optionalBoardGames.get();
-            for (BoardGame game : boardGames) {
-                SearchRes searchRes = SearchRes.builder()
-                        .entityTypeValue(EntityType.BOARD_GAME.toString())
-                        .id(game.getId())
-                        .name(game.getName())
-                        .build();
-                searchResList.add(searchRes);
-            }
-        }
+        Optional<BoardGame> boardGame = boardGameRepository.searchByName(word);
+        boardGame.ifPresent(game -> {
+            SearchRes searchRes = SearchRes.builder()
+                    .entityTypeValue(EntityType.BOARD_GAME.toString())
+                    .id(game.getId())
+                    .name(game.getName())
+                    .build();
+            searchResList.add(searchRes);
+        });
 
         // 닉네임으로 검색
-        Optional<List<User>> optionalUsers = userRepository.findByNicknameContaining(word);
-        if (optionalUsers.isPresent()) {
-            List<User> users = optionalUsers.get();
-            for (User u : users) {
-                SearchRes searchRes = SearchRes.builder()
-                        .entityTypeValue(EntityType.USER.toString())
-                        .id(u.getId())
-                        .name(u.getNickname())
-                        .image(u.getProfile())
-                        .build();
-                searchResList.add(searchRes);
-            }
-        }
+        Optional<User> user = userRepository.searchByUserNickname(word);
+        user.ifPresent(u -> {
+            SearchRes searchRes = SearchRes.builder()
+                    .entityTypeValue(EntityType.USER.toString())
+                    .id(u.getId())
+                    .name(u.getNickname())
+                    .image(u.getProfile())
+                    .build();
+            searchResList.add(searchRes);
+        });
 
         if (searchResList.isEmpty()) {
             throw new BaseException(NO_DATA_FOUND);
@@ -236,26 +230,6 @@ public class UserService {
         return searchResList;
     }
 
-    @Transactional(readOnly = true)
-    public List<MyFriendRes> getFriendsList(Long userId) throws BaseException {
-        if (!userRepository.existsById(userId)) {
-            throw new BaseException(NO_USER_FOUND);
-        }
-
-        List<Friends> friends = friendsRepository.findByFromUserIdAndIsAcceptedTrue(userId);
-        List<MyFriendRes> myFriendResList = friends.stream()
-                .map(friend -> {
-                    User toUser = friend.getToUser();
-                    return MyFriendRes.builder()
-                            .nickname(toUser.getNickname())
-                            .profile(toUser.getProfile())
-                            .score(toUser.getScore())
-                            .build();
-                })
-                .collect(Collectors.toList());
-
-        return myFriendResList;
-    }
     // 전화번호로 닉네임 찾기
     @Transactional(readOnly = true)
     public String findNickname(String phone) throws BaseException {
@@ -266,12 +240,17 @@ public class UserService {
 
     }
 
-    // 전화번호로 비밀번호로 찾기 (추후 수정)
-    @Transactional(readOnly = true)
-    public String findPassword(String phone) throws BaseException {
-        User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new BaseException("사용자를 찾을 수 없습니다."));
+    @Transactional
+    public void resetPassword(String phoneNumber, String newPassword) throws BaseException {
+        Optional<User> optionalUser = userRepository.findByPhone(phoneNumber);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get(); // Optional에서 User 객체 추출
+            user.setPassword(passwordEncoder.encode(newPassword)); // 비밀번호 암호화
 
-        return user.getPassword();
+            userRepository.save(user);
+        } else {
+            throw new BaseException("사용자를 찾을 수 없습니다.");
+        }
     }
+
 }

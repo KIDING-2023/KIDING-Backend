@@ -1,4 +1,4 @@
-package com.demo.KIDING.global.auth;
+package com.demo.KIDING.global.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -30,7 +30,7 @@ public class JwtFilter extends GenericFilterBean {
         // 1. Request Header에서 JWT 토큰 추출
         System.out.println("=== doFilter ===");
         String token = resolveToken((HttpServletRequest) request);
-        System.out.println("토근 확인====");
+        System.out.println("===토큰 확인====");
         System.out.println(token);
         // 2. validateToken으로 토큰 유효성 검사
         if (token != null && jwtProvider.validateToken(token)) {

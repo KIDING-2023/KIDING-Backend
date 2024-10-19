@@ -125,16 +125,6 @@ public class BoardGameController {
         }
     }
 
-    // 전체 랭킹 조회
-//    @GetMapping("/ranking/all")
-//    public BaseResponse<List<String>> viewRanking() {
-//        try {
-//            return new BaseResponse<>(rankingService.getRanking());
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//    }
-
     @GetMapping("/ranking/all")
     public List<String> viewRanking() {
         return rankingService.getRanking();
