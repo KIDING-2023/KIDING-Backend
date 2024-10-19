@@ -14,6 +14,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
     Optional<BoardGame> findById(Long boardGameId);
 
     boolean existsByName(String name);
+    boolean existsById(Long id);
     Optional<BoardGame> findByName(String name);
 
     // JPQL

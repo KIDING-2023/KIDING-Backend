@@ -1,19 +1,24 @@
 package com.demo.KIDING.controller;
 
+import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.BoardGameRes;
 import com.demo.KIDING.dto.GamePlayReq;
 import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
+import com.demo.KIDING.global.auth.JwtProvider;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.BaseResponseStatus;
+import com.demo.KIDING.repository.UserRepository;
 import com.demo.KIDING.service.BoardGameService;
 import com.demo.KIDING.service.RankingService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
 
@@ -24,12 +29,18 @@ public class BoardGameController {
 
     private final BoardGameService boardGameService;
     private final RankingService rankingService;
+    private final JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
-    @GetMapping("/boardgames/{userId}/main")
-    public BaseResponse<List<BoardGameRes>> boardGamesMain(@PathVariable Long userId) {
+
+    @GetMapping("/boardgames/main")
+    public BaseResponse<List<BoardGameRes>> boardGamesMain(@RequestHeader(value = "Authorization") String accessToken) {
 
         try {
-            List<BoardGameRes> boardGameResList = boardGameService.boardGamesMain(userId);
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            List<BoardGameRes> boardGameResList = boardGameService.boardGamesMain(optionalUser.get().getId());
             if (boardGameResList.isEmpty()) {
                 return new BaseResponse<>(NO_BOARD_GAME_YET);
             } else {
@@ -41,10 +52,13 @@ public class BoardGameController {
 
     }
 
-    @GetMapping("/boardgames/{userId}/popular")
-    public BaseResponse<List<BoardGameRes>> boardGamesPopular(@PathVariable Long userId) {
+    @GetMapping("/boardgames/popular")
+    public BaseResponse<List<BoardGameRes>> boardGamesPopular(@RequestHeader(value = "Authorization") String accessToken) {
         try {
-            List<BoardGameRes> boardGameResList = boardGameService.boardGamePopular(userId);
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            List<BoardGameRes> boardGameResList = boardGameService.boardGamePopular(optionalUser.get().getId());
             if (boardGameResList.isEmpty()) {
                 return new BaseResponse<>(NO_BOARD_GAME_PLAYERS_YET);
             } else {
@@ -55,11 +69,14 @@ public class BoardGameController {
         }
     }
 
-    @GetMapping("/boardgames/{userId}/recent")
-    public BaseResponse<List<RecentGameRes>> boardGameRecent(@PathVariable Long userId) {
+    @GetMapping("/boardgames/recent")
+    public BaseResponse<List<RecentGameRes>> boardGameRecent(@RequestHeader(value = "Authorization") String accessToken) {
 
         try {
-            List<RecentGameRes> recentGames = boardGameService.boardGameRecent(userId);
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            List<RecentGameRes> recentGames = boardGameService.boardGameRecent(optionalUser.get().getId());
             return new BaseResponse<>(recentGames);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -67,16 +84,35 @@ public class BoardGameController {
     }
 
     @PostMapping("/boardgame")  // 답변완료 api
-    public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestBody GamePlayReq gamePlayReq) {
+    public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
 
         try {
-            boardGameService.boardGamePlay(gamePlayReq.getName(), gamePlayReq.getUserId());
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), optionalUser.get().getId(), gamePlayReq.getCount());
             return new BaseResponse<>(GAME_PLAYED);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 
     }
+
+    @PostMapping("/boardgame/final")  // 최종 답변
+    public BaseResponse<BaseResponseStatus> boardGamePlayFinal(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
+
+        try {
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            boardGameService.boardGamePlayFinal(gamePlayReq.getBoardGameId(), optionalUser.get().getId());
+            return new BaseResponse<>(GAME_PLAYED);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
 
     @GetMapping("/today/ranking") // 오늘의 랭킹 조회
     public BaseResponse<RankingRes> todayRanking() {

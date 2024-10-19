@@ -146,29 +146,41 @@ public class BoardGameService {
     }
 
     @Transactional
-    public void boardGamePlay(String gameName, Long userId) throws BaseException{
-//        log.info(userId.getClass().getName());
-//        log.info(String.valueOf(userId));
+    public void boardGamePlay(Long boardgameId, Long userId, Integer count) throws BaseException{
 
         if (!userRepository.existsById(userId)) {
             throw new BaseException(NO_USER_FOUND);
         }
-        if (!boardGameRepository.existsByName(gameName)) {
+        if (!boardGameRepository.existsById(boardgameId)) {
             throw new BaseException(NO_GAME_FOUND);
         }
+        BoardGame game = boardGameRepository.findById(boardgameId).get();
+        User loginUser = userRepository.findById(userId).get();
+        loginUser.playGame(count);
+    }
 
+    @Transactional
+    public void boardGamePlayFinal(Long boardgameId, Long userId) throws BaseException{
+
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+        if (!boardGameRepository.existsById(boardgameId)) {
+            throw new BaseException(NO_GAME_FOUND);
+        }
+        BoardGame game = boardGameRepository.findById(boardgameId).get();
         // gameUser에 업데이트, 키딩칩 & 누적 대답수 +1, boargame player +1
         gameUserRepository.save(GameUser.builder()
                 .user(userRepository.findById(userId).get())
-                .boardGame(boardGameRepository.findByName(gameName).get()).build());
+                .boardGame(boardGameRepository.findByName(game.getName()).get()).build());
 
         User loginUser = userRepository.findById(userId).get();
-        BoardGame boardGame = boardGameRepository.findByName(gameName).get();
+        BoardGame boardGame = boardGameRepository.findByName(game.getName()).get();
         boardGame.playGame();
-        loginUser.playGame();
 
-        log.info(userId +" 사용자가 " + gameName + " 보드게임을 플레이하였습니다.");
+        log.info(userId +"번 사용자가 " + game.getName() + " 보드게임을 플레이하였습니다.");
     }
+
 
     @Transactional(readOnly = true)
     public RankingRes todayRanking() throws BaseException {

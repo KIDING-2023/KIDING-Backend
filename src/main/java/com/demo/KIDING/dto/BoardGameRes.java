@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class BoardGameRes {
 
+    private Long id;
     private String name;
     private Long players;
     private boolean bookmarked;
@@ -16,6 +17,7 @@ public class BoardGameRes {
 
     public static BoardGameRes from(BoardGame boardGame) {
         return BoardGameRes.builder()
+                .id(boardGame.getId())
                 .name(boardGame.getName())
                 .players(boardGame.getPlayers())
                 .bookmarked(false)
