@@ -149,4 +149,14 @@ public class UserController {
         return ResponseEntity.ok("비밀번호가 재설정되었습니다.");
     }
 
+    @GetMapping("/signup/checkNickname")
+    public String checkNicknameDuplicate(@RequestParam String nickname) {
+
+        return userService.checkNicknameDuplicate(nickname);
+
+    }
+
+
+
+
 }

@@ -195,14 +195,23 @@ public class BoardGameService {
         return rankingRes.get().get(0);
 
     }
-//
-//    public int rollDice() {
-//        if (boardGameRepository.count == 0) {
-//            return 1; // 플레이한 횟수가 0이면 항상 1 반환
-//        }
-//
-//        // 주사위 눈을 랜덤으로 결정 (1부터 6까지)
-//        Random random = new Random();
-//        return random.nextInt(6) + 1;
-//    }
+
+    // 주사위 눈
+    public int rollDice(Long boardgameId, Long userId, Long count) throws BaseException {
+
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+        if (!boardGameRepository.existsById(boardgameId)) {
+            throw new BaseException(NO_GAME_FOUND);
+        }
+
+        if (count == 0) {
+            return 1; // 플레이한 횟수가 0이면 항상 1 반환
+        }
+
+        // 주사위 눈을 랜덤으로 결정 (1부터 6까지)
+        Random random = new Random();
+        return random.nextInt(6) + 1;
+    }
 }

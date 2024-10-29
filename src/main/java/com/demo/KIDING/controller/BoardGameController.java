@@ -5,7 +5,7 @@ import com.demo.KIDING.dto.BoardGameRes;
 import com.demo.KIDING.dto.GamePlayReq;
 import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
-import com.demo.KIDING.global.auth.JwtProvider;
+import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
 import com.demo.KIDING.global.common.BaseResponseStatus;
@@ -125,8 +125,21 @@ public class BoardGameController {
         }
     }
 
-    @GetMapping("/ranking/all")
+    @PostMapping("/ranking/all")
     public List<String> viewRanking() {
         return rankingService.getRanking();
     }
+
+    @GetMapping("/rollDice") // 오늘의 랭킹 조회
+    public BaseResponse<RankingRes> rollDice(@RequestBody Long count) {
+
+        try {
+            // userRepository에서 게임플레이 횟수 오름차순으로 사용자 한명 정보만 반환
+            return new BaseResponse<>(rankingService.getTopUserByAnswers());
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+
 }

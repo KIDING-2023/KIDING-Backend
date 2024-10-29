@@ -253,4 +253,14 @@ public class UserService {
         }
     }
 
+    // 닉네임 중복 확인
+    public String checkNicknameDuplicate(String nickname) {
+
+        String result = "사용 가능한 닉네임입니다.";
+        if (userRepository.existsByNickname(nickname) == true) {
+            result = "이미 존재하는 닉네임입니다.";
+        }
+        return result;
+    }
+
 }
