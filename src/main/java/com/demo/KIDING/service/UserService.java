@@ -241,20 +241,21 @@ public class UserService {
     }
 
     @Transactional
-    public void resetPassword(String phoneNumber, String newPassword) throws BaseException {
+    public String resetPassword(String phoneNumber, String newPassword) throws BaseException {
         Optional<User> optionalUser = userRepository.findByPhone(phoneNumber);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get(); // Optional에서 User 객체 추출
             user.setPassword(passwordEncoder.encode(newPassword)); // 비밀번호 암호화
 
             userRepository.save(user);
+            return "비밀번호가 재설정되었습니다.";
         } else {
             throw new BaseException("사용자를 찾을 수 없습니다.");
         }
     }
 
     // 닉네임 중복 확인
-    public String checkNicknameDuplicate(String nickname) {
+    public String checkNicknameDuplicate(String nickname) throws BaseException {
 
         String result = "사용 가능한 닉네임입니다.";
         if (userRepository.existsByNickname(nickname) == true) {

@@ -143,16 +143,31 @@ public class UserController {
         }
     }
 
+//    @PostMapping("/help/resetPassword")
+//    public ResponseEntity<String> resetPassword(@RequestParam String phoneNumber, @RequestParam String newPassword) throws BaseException {
+//        userService.resetPassword(phoneNumber, newPassword);
+//        return ResponseEntity.ok("비밀번호가 재설정되었습니다.");
+//    }
+
     @PostMapping("/help/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestParam String phoneNumber, @RequestParam String newPassword) throws BaseException {
-        userService.resetPassword(phoneNumber, newPassword);
-        return ResponseEntity.ok("비밀번호가 재설정되었습니다.");
+    public BaseResponse resetPassword(@RequestParam String phoneNumber, @RequestParam String newPassword) throws BaseException {
+
+        try {
+            return new BaseResponse<>(userService.resetPassword(phoneNumber, newPassword));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getMessage());
+        }
+
     }
 
     @GetMapping("/signup/checkNickname")
-    public String checkNicknameDuplicate(@RequestParam String nickname) {
+    public BaseResponse checkNicknameDuplicate(@RequestParam String nickname) {
 
-        return userService.checkNicknameDuplicate(nickname);
+        try {
+            return new BaseResponse<>(userService.checkNicknameDuplicate(nickname));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getMessage());
+        }
 
     }
 
