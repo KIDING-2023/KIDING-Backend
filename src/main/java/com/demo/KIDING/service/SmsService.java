@@ -45,7 +45,7 @@ public class SmsService {
         );
     }
 
-    public void sendVerificationMessage(String to, LocalDateTime sentAt){
+    public String sendVerificationMessage(String to, LocalDateTime sentAt) throws BaseException {
         Message message = new Message();
         message.setFrom(smsSender);
         message.setTo(to);
@@ -58,9 +58,11 @@ public class SmsService {
         message.setText(text);
 
         messageService.sendOne(new SingleMessageSendingRequest(message));
+
+        return "인증번호를 보냈습니다.";
     }
 
-    public void verifyCode(String code, LocalDateTime verifiedAt) throws BaseException {
+    public String verifyCode(String code, LocalDateTime verifiedAt) throws BaseException {
         VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
                 .orElseThrow(() -> new BaseException(VERIFICATION_CODE_NOT_FOUND));
 
@@ -69,6 +71,8 @@ public class SmsService {
         }
 
         verificationCodeRepository.remove(verificationCode);
+
+        return "정상 인증 되었습니다.";
     }
 
 }
