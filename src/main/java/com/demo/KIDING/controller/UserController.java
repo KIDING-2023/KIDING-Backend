@@ -171,6 +171,17 @@ public class UserController {
 
     }
 
+    @GetMapping("/signup/checkPhone")
+    public BaseResponse checkPhoneDuplicate(@RequestParam String phone) {
+
+        try {
+            return new BaseResponse<>(userService.checkPhoneNumber(phone));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getMessage());
+        }
+
+    }
+
 
 
 

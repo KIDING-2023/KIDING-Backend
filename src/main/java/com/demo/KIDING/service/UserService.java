@@ -264,4 +264,14 @@ public class UserService {
         return result;
     }
 
+    // 전화번호 중복 확인
+    public String checkPhoneNumber(String phone) throws BaseException {
+
+        String result = "사용 가능한 전화번호입니다.";
+        if (userRepository.existsByPhone(phone) == true) {
+            result = "이미 사용 중인 전화번호입니다.";
+        }
+        return result;
+    }
+
 }
