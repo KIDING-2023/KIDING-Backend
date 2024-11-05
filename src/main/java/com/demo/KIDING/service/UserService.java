@@ -240,6 +240,7 @@ public class UserService {
 
     }
 
+    // 비밀번호 재설정
     @Transactional
     public String resetPassword(String phoneNumber, String newPassword) throws BaseException {
         Optional<User> optionalUser = userRepository.findByPhone(phoneNumber);

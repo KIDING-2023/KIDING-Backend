@@ -12,7 +12,6 @@ import com.demo.KIDING.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,15 +99,28 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userId}/mypage")
-    public BaseResponse<MyPageRes> getMyPage(@PathVariable Long userId) {
+    @GetMapping("/user/myPage")
+    public BaseResponse<MyPageRes> getMyPage(@RequestHeader(value = "Authorization") String accessToken) {
 
         try {
-            return new BaseResponse<>(userService.getMyPage(userId));
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            return new BaseResponse<>(userService.getMyPage(optionalUser.get().getId()));
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+//        @GetMapping("/{userId}/mypage")
+//    public BaseResponse<MyPageRes> getMyPage(@PathVariable Long userId) {
+//
+//        try {
+//            return new BaseResponse<>(userService.getMyPage(userId));
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//    }
 
     @GetMapping("/search")
     public BaseResponse<List<SearchRes>> searchItem(@RequestHeader(value = "Authorization") String token, @RequestParam String word) {

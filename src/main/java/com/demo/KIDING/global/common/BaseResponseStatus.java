@@ -30,7 +30,7 @@ public enum BaseResponseStatus {
     BOOKMARKED_ALREADY(true, 200, "이미 즐겨찾기가 설정된 게임입니다."),
     FAILED_TO_CHANGE_PASSWORD(true, 200, "비밀번호 변경에 실패했습니다."),
     NO_BOOKMARK_YET(true, 200, "즐겨찾기 설정한 게임이 없습니다."),
-    VERIFICATION_CODE_NOT_FOUND(false, 400, "인증 코드가 ");
+    VERIFICATION_CODE_NOT_FOUND(false, 400, "인증 코드가 틀렸습니다.");
 
 
     private final boolean isSuccess;

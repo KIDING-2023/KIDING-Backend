@@ -113,8 +113,7 @@ public class BoardGameController {
 
     }
 
-
-    @GetMapping("/today/ranking") // 오늘의 랭킹 조회
+    @GetMapping("/ranking/today") // 오늘의 랭킹 조회
     public BaseResponse<RankingRes> todayRanking() {
 
         try {
@@ -130,7 +129,7 @@ public class BoardGameController {
         return rankingService.getRanking();
     }
 
-    @GetMapping("/rollDice") // 오늘의 랭킹 조회
+    @GetMapping("/boardgame/rollDice")
     public BaseResponse<RankingRes> rollDice(@RequestBody Long count) {
 
         try {
