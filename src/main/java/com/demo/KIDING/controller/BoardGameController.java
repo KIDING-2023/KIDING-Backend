@@ -1,10 +1,7 @@
 package com.demo.KIDING.controller;
 
 import com.demo.KIDING.domain.User;
-import com.demo.KIDING.dto.BoardGameRes;
-import com.demo.KIDING.dto.GamePlayReq;
-import com.demo.KIDING.dto.RankingRes;
-import com.demo.KIDING.dto.RecentGameRes;
+import com.demo.KIDING.dto.*;
 import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.global.common.BaseResponse;
@@ -124,8 +121,8 @@ public class BoardGameController {
         }
     }
 
-    @PostMapping("/ranking/all")
-    public List<String> viewRanking() {
+    @GetMapping("/ranking/all")
+    public List<RankingResponse> viewRanking() {
         return rankingService.getRanking();
     }
 
