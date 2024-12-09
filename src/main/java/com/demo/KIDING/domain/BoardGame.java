@@ -23,8 +23,6 @@ public class BoardGame {
 
     private Long players;
 
-    private Integer count;
-
     public void playGame() {
         this.players += 1;
     }
