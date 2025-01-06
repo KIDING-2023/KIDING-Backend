@@ -24,11 +24,23 @@ public class NotificationService {
     }
 
     public void sendFriendRequestResponseNotification(String senderNickname, String receiverNickname, String response) {
-        String destination = "/topic/notifications/" + senderNickname;
-        String messageContent = receiverNickname+"님이 친구 신청을 " + response +" 했습니다.";
-        MessageDto messageDto = new MessageDto(messageContent);
-        messagingTemplate.convertAndSend(destination, messageDto);
+
+        try {
+            System.out.println("Sending notification: sender=" + senderNickname + ", receiver=" + receiverNickname + ", status=" + response);
+            // 알림 전송 로직
+            String destination = "/topic/notifications/" + senderNickname;
+            String messageContent = receiverNickname+"님이 친구 신청을 " + response +" 수락했습니다.";
+            MessageDto messageDto = new MessageDto(messageContent);
+            messagingTemplate.convertAndSend(destination, messageDto);
+        } catch (Exception e) {
+            System.err.println("Error sending notification: " + e.getMessage());
+            throw e; // 예외 다시 던지기
+        }
+
+
+
 
     }
+
 
 }

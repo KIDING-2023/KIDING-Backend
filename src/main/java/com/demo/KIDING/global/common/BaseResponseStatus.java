@@ -26,12 +26,14 @@ public enum BaseResponseStatus {
     NO_DATA_FOUND(true, 200, "검색어에 해당되는 데이터가 없습니다."),
     NO_GAME_FOUND(true, 200, "해당 게임은 존재하지 않습니다"),
     GAME_PLAYED(true, 200, "게임을 플레이하였습니다."),
-    BOOKMARK_REQUESTED(true, 200, "즐겨찾기 설정이 완료되었습니다."),
+
+    BOOKMARK_REQUESTED(true, 200, "북마크 설정이 완료되었습니다."),
     BOOKMARKED_ALREADY(true, 200, "이미 즐겨찾기가 설정된 게임입니다."),
     FAILED_TO_CHANGE_PASSWORD(true, 200, "비밀번호 변경에 실패했습니다."),
-    NO_BOOKMARK_YET(true, 200, "즐겨찾기 설정한 게임이 없습니다."),
-    VERIFICATION_CODE_NOT_FOUND(false, 400, "인증 코드가 틀렸습니다.");
-
+    NO_BOOKMARK_YET(true, 200, "북마크한 게임이 없습니다."),
+    VERIFICATION_CODE_NOT_FOUND(false, 400, "인증 코드가 틀렸습니다."),
+    BOOKMARK_NOT_FOUND(false, 200, "북마크를 찾을 수 없습니다."),
+    BOOKMARK_DELETED(true, 200, "북마크가 해제되었습니다.");
 
     private final boolean isSuccess;
 

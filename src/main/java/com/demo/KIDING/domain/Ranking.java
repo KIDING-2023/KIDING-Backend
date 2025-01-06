@@ -1,9 +1,6 @@
 package com.demo.KIDING.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,6 +8,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @Getter
+@Setter
 @Table(name = "ranking")
 @Entity
 public class Ranking {
@@ -19,10 +17,12 @@ public class Ranking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int ranking_position;
+    private int rankingPosition;
 
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;  // 랭킹과 일대일 관계
+
+    private int chips;
 
 }

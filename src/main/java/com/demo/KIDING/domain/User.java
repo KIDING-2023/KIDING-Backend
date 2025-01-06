@@ -1,16 +1,10 @@
 package com.demo.KIDING.domain;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,7 +42,8 @@ public class User extends BaseEntity{
 
     private int players_with;  // 함께한 친구
 
-    private int kiding_chip;  // 키딩칩
+    @Column(name = "kiding_chip")
+    private int kidingChip;  // 키딩칩
 
     @OneToMany(mappedBy = "user")
     private List<BookMark> bookMarks;  // 즐겨찾기
@@ -56,9 +51,9 @@ public class User extends BaseEntity{
     @OneToOne(mappedBy = "user")
     private Ranking ranking;
 
-    public void playGame(Integer count) {
+    public void playGame() {
         this.answers += 1;
-        this.kiding_chip += count;
+        this.kidingChip += 1;
     }
 
     public void setCharacter(Integer num) {

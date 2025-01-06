@@ -17,4 +17,10 @@ public class RankingResponse {
         this.user = user;
         this.chips = chips;
     }
+
+//    public RankingResponse(String user, int chips, int rank) {
+//        this.user = user;
+//        this.chips = chips;
+//        this.rank = rank;
+//    }
 }

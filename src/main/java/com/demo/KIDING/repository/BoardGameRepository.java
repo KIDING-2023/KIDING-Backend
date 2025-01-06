@@ -2,7 +2,6 @@ package com.demo.KIDING.repository;
 
 import com.demo.KIDING.domain.BoardGame;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -15,12 +14,14 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 
     boolean existsByName(String name);
     boolean existsById(Long id);
-    Optional<BoardGame> findByName(String name);
+    //Optional<BoardGame> findByGameName();
 
     // JPQL
 //    @Query("SELECT b FROM BoardGame b WHERE b.name LIKE %:name%")
     Optional<BoardGame> searchByName(@Param("name")String name);
 
     Optional<List<BoardGame>> findByNameContaining(String name);
+
+    Optional<BoardGame> findByName(String name);
 
 }

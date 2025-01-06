@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class FriendRequestController {
 
     private final FriendRequestService friendRequestService;
-    private final UserService userService;
 
     @PostMapping("/request")
     public void sendFriendRequest(@RequestBody FriendRequestReq request) {
@@ -24,7 +23,12 @@ public class FriendRequestController {
 
     @PostMapping("/respond")
     public String respondToFriendRequest(@RequestBody FriendRequestRes friendRequestRes) {
-        friendRequestService.respondToFriendRequest(friendRequestRes.getSenderNickname(), friendRequestRes.getReceiverNickname(), friendRequestRes.isAccepted());
+        System.out.println("Controller: FriendRequestRes.isAccepted = " + friendRequestRes.isAccepted());
+        friendRequestService.respondToFriendRequest(
+                friendRequestRes.getSenderNickname(),
+                friendRequestRes.getReceiverNickname(),
+                friendRequestRes.isAccepted()
+        );
         return friendRequestRes.isAccepted() ? "Friend request accepted" : "Friend request rejected";
     }
 

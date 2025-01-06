@@ -57,13 +57,17 @@ public class FriendRequestService {
 
     @Transactional
     public void respondToFriendRequest(String senderNickname, String receiverNickname, boolean isAccepted) {
+
         User sender = userRepository.findByNickname(senderNickname)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid sender nickname"));
         User receiver = userRepository.findByNickname(receiverNickname)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid receiver nickname"));
 
+        System.out.println("Calling respondToFriendRequest...");
+
         FriendRequest friendRequest = friendRequestRepository.findBySenderAndReceiver(sender, receiver)
                 .orElseThrow(() -> new IllegalStateException("친구 요청이 존재하지 않습니다."));
+
 
         if (isAccepted) {
             Friends friendship = Friends.builder()
@@ -82,11 +86,68 @@ public class FriendRequestService {
         // 요청 삭제
         friendRequestRepository.delete(friendRequest);
 
-
     }
-}
 
-//    public void acceptFriendRequest(Long requestId) {
+    // 친구 신청 수락 (디버그 로그 추가)
+//    @Transactional
+//    public void respondToFriendRequest(String senderNickname, String receiverNickname, boolean isAccepted) {
+//        System.out.println("Method respondToFriendRequest called with:");
+//        System.out.println("Sender Nickname: " + senderNickname);
+//        System.out.println("Receiver Nickname: " + receiverNickname);
+//        System.out.println("isAccepted: " + isAccepted);
+//
+//        // 사용자 조회
+//        User sender = userRepository.findByNickname(senderNickname)
+//                .orElseThrow(() -> {
+//                    System.err.println("Invalid sender nickname: " + senderNickname);
+//                    return new IllegalArgumentException("Invalid sender nickname");
+//                });
+//
+//        User receiver = userRepository.findByNickname(receiverNickname)
+//                .orElseThrow(() -> {
+//                    System.err.println("Invalid receiver nickname: " + receiverNickname);
+//                    return new IllegalArgumentException("Invalid receiver nickname");
+//                });
+//
+//        // 친구 요청 조회
+//        FriendRequest friendRequest = friendRequestRepository.findBySenderAndReceiver(sender, receiver)
+//                .orElseThrow(() -> {
+//                    System.err.println("Friend request not found for sender: " + senderNickname + ", receiver: " + receiverNickname);
+//                    return new IllegalStateException("Friend request does not exist");
+//                });
+//
+//        System.out.println("Friend request found: " + friendRequest);
+//
+//        // 수락 또는 거절 처리
+//        if (isAccepted) {
+//            System.out.println("Processing friend request as accepted...");
+//            // 친구 관계 생성 및 저장
+//            Friends friendship = Friends.builder()
+//                    .fromUser(sender)
+//                    .toUser(receiver)
+//                    .isAccepted(true)
+//                    .build();
+//
+//            Friends savedFriendship = friendsRepository.save(friendship);
+//            System.out.println("Friendship saved: " + savedFriendship);
+//
+//            // 수락 알림 전송
+//            notificationService.sendFriendRequestResponseNotification(senderNickname, receiverNickname, "accepted");
+//            System.out.println("Notification sent for accepted friend request.");
+//        } else {
+//            System.out.println("Processing friend request as rejected...");
+//            // 거절 알림 전송
+//            notificationService.sendFriendRequestResponseNotification(senderNickname, receiverNickname, "rejected");
+//            System.out.println("Notification sent for rejected friend request.");
+//        }
+//
+//        // 친구 요청 삭제
+//        friendRequestRepository.delete(friendRequest);
+//        System.out.println("Friend request deleted for sender: " + senderNickname + ", receiver: " + receiverNickname);
+//    }
+
+
+//        public void acceptFriendRequest(Long requestId) {
 //        FriendRequest friendRequest = friendRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
 //        friendRequest.requestReply(false);
 //        friendRequestRepository.save(friendRequest);
@@ -107,4 +168,8 @@ public class FriendRequestService {
 //
 //        messagingTemplate.convertAndSendToUser(friendRequest.getSender().getNickname(), "/queue/notifications", notification);
 //    }
+
+}
+
+
 

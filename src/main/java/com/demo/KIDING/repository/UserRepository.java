@@ -1,6 +1,5 @@
 package com.demo.KIDING.repository;
 
-import com.demo.KIDING.domain.BoardGame;
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.RankingRes;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByNickname(String nickname);
 
     User findTopByOrderByAnswersDesc();
+
+    List<User> findAllByKidingChip(int Count);
 
     @Query(value = "SELECT u.id, u.nickname, u.answers FROM user u INNER JOIN game_user gu ON u.id = gu.user_id ORDER BY u.answers DESC", nativeQuery = true)
     Optional<List<RankingRes>> findRankUser();

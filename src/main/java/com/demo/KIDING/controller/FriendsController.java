@@ -26,12 +26,5 @@ public class FriendsController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-
-    // 친구 추가 :api/friends/add
-
-    // 친구 추가 수락/거절 기능: api/friends
-
-
-
 }
 

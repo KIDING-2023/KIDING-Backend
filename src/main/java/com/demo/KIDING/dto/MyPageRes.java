@@ -2,6 +2,8 @@ package com.demo.KIDING.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -20,5 +22,6 @@ public class MyPageRes {
     private int kiding_chip;
 
     // 동점자 추가
+    private List<String> sameKidingChipNicknames;
 
 }

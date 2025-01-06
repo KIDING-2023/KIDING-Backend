@@ -11,4 +11,6 @@ public interface BookMarkRepository extends JpaRepository<BookMark, Long> {
     boolean existsByUserIdAndBoardGameId(Long userId, Long boardGameId);
 
     Optional<List<BookMark>> findByUserId(Long userId);
+
+    void deleteByUserIdAndBoardGameId(Long userId, Long boardgameId);
 }

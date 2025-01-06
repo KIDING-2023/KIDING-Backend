@@ -1,11 +1,9 @@
 package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.BoardGame;
-import com.demo.KIDING.domain.BookMark;
 import com.demo.KIDING.domain.GameUser;
 import com.demo.KIDING.domain.User;
 import com.demo.KIDING.dto.BoardGameRes;
-import com.demo.KIDING.dto.BookMarkRes;
 import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
@@ -31,8 +29,6 @@ public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final GameUserRepository gameUserRepository;
     private final UserRepository userRepository;
-    private final BookMarkRepository bookMarkRepository;
-
 
     @Transactional(readOnly = true)
     public List<BoardGameRes> boardGamesMain(Long userId) throws BaseException {
@@ -146,7 +142,7 @@ public class BoardGameService {
     }
 
     @Transactional
-    public void boardGamePlay(Long boardgameId, Long userId, Integer count) throws BaseException{
+    public void boardGamePlay(Long boardgameId, Long userId/*, Integer count*/) throws BaseException{
 
         if (!userRepository.existsById(userId)) {
             throw new BaseException(NO_USER_FOUND);
@@ -154,9 +150,9 @@ public class BoardGameService {
         if (!boardGameRepository.existsById(boardgameId)) {
             throw new BaseException(NO_GAME_FOUND);
         }
-        BoardGame game = boardGameRepository.findById(boardgameId).get();
-        User loginUser = userRepository.findById(userId).get();
-        loginUser.playGame(count);
+//        BoardGame game = boardGameRepository.findById(boardgameId).get();
+//        User loginUser = userRepository.findById(userId).get();
+//        //loginUser.playGame(count);
     }
 
 

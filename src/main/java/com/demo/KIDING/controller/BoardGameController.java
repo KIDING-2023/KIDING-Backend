@@ -29,7 +29,6 @@ public class BoardGameController {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
-
     @GetMapping("/boardgames/main")
     public BaseResponse<List<BoardGameRes>> boardGamesMain(@RequestHeader(value = "Authorization") String accessToken) {
 
@@ -80,20 +79,36 @@ public class BoardGameController {
         }
     }
 
+//    @PostMapping("/boardgame")  // 답변완료 api
+//    public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
+//
+//        try {
+//            Claims claims = jwtProvider.parseClaims(accessToken);
+//            String username = claims.get("nickname", String.class);
+//            Optional<User> optionalUser = userRepository.findByNickname(username);
+//            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), optionalUser.get().getId()/*, gamePlayReq.getCount()*/);
+//            return new BaseResponse<>(GAME_PLAYED);
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//
+//    }
+
     @PostMapping("/boardgame")  // 답변완료 api
     public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
 
-        try {
-            Claims claims = jwtProvider.parseClaims(accessToken);
+        try { Claims claims = jwtProvider.parseClaims(accessToken);
             String username = claims.get("nickname", String.class);
             Optional<User> optionalUser = userRepository.findByNickname(username);
-            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), optionalUser.get().getId(), gamePlayReq.getCount());
+
+            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), gamePlayReq.getUserId());
             return new BaseResponse<>(GAME_PLAYED);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 
     }
+
 
     @PostMapping("/boardgame/final")  // 최종 답변
     public BaseResponse<BaseResponseStatus> boardGamePlayFinal(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
@@ -110,6 +125,18 @@ public class BoardGameController {
 
     }
 
+//    @GetMapping("/ranking/today") // 오늘의 랭킹 조회
+//    public BaseResponse<RankingRes> todayRanking() {
+//
+//        try {
+//            // userRepository에서 게임플레이 횟수 오름차순으로 사용자 한명 정보만 반환
+//            return new BaseResponse<>(rankingService.getTopUserByAnswers());
+//        } catch (BaseException e) {
+//            return new BaseResponse<>(e.getStatus());
+//        }
+//    }
+
+
     @GetMapping("/ranking/today") // 오늘의 랭킹 조회
     public BaseResponse<RankingRes> todayRanking() {
 
@@ -121,7 +148,7 @@ public class BoardGameController {
         }
     }
 
-    @GetMapping("/ranking/all")
+    @GetMapping("/ranking/all") // 전체 랭킹 조회
     public List<RankingResponse> viewRanking() {
         return rankingService.getRanking();
     }

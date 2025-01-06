@@ -86,6 +86,21 @@ public class UserController {
 
     }
 
+    @PostMapping("/bookmark/delete/{boardgameId}")
+    public BaseResponse deleteBookmark(@PathVariable Long boardgameId, @RequestHeader(value = "Authorization") String accessToken) {
+
+        try {
+            Claims claims = jwtProvider.parseClaims(accessToken);
+            String username = claims.get("nickname", String.class);
+            Optional<User> optionalUser = userRepository.findByNickname(username);
+            userService.deleteBookmark(optionalUser.get().getId(), boardgameId);
+            return new BaseResponse<>(BOOKMARK_DELETED);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
     @GetMapping("/bookmark")
     public BaseResponse<List<BookMarkRes>> getAllBookMark(@RequestHeader(value = "Authorization") String accessToken) {
 
@@ -111,16 +126,6 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
-
-//        @GetMapping("/{userId}/mypage")
-//    public BaseResponse<MyPageRes> getMyPage(@PathVariable Long userId) {
-//
-//        try {
-//            return new BaseResponse<>(userService.getMyPage(userId));
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//    }
 
     @GetMapping("/search")
     public BaseResponse<List<SearchRes>> searchItem(@RequestHeader(value = "Authorization") String token, @RequestParam String word) {

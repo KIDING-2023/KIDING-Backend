@@ -9,7 +9,6 @@ import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
 import com.demo.KIDING.repository.UserRepository;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.demo.KIDING.domain.Role.ROLE_USER;
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
@@ -65,7 +65,7 @@ public class UserService {
                     .answers(0)
                     .score(0)
                     .players_with(0)
-                    .kiding_chip(0)
+                    .kidingChip(0)
                     .build());
             log.info("닉네임 : " + newUser.getNickname() + " 이 회원가입을 완료했습니다." );
 
@@ -130,6 +130,7 @@ public class UserService {
 
     }
 
+    // 북마크 설정
     @Transactional
     public void bookmark(Long userId, Long boardgameId) throws BaseException{
 
@@ -153,6 +154,28 @@ public class UserService {
 
         log.info(userById.get().getNickname() + " 사용자가 `" + gameById.get().getName() + "` 보드게임을 즐겨찾기 설정했습니다.");
         
+    }
+
+    // 북마크 해제
+    @Transactional
+    public void deleteBookmark(Long userId, Long boardgameId) throws BaseException {
+
+        if (!userRepository.existsById(userId)) {
+            throw new BaseException(NO_USER_FOUND);
+        }
+        if (!boardGameRepository.existsById(boardgameId)) {
+            throw new BaseException(NO_GAME_FOUND);
+        }
+
+        // 사용자가 즐겨찾기로 등록한 보드게임이 있는지 확인
+        if (!bookMarkRepository.existsByUserIdAndBoardGameId(userId, boardgameId)) {
+            throw new BaseException(BOOKMARK_NOT_FOUND);
+        }
+
+        // 즐겨찾기 삭제
+        bookMarkRepository.deleteByUserIdAndBoardGameId(userId, boardgameId);
+
+        log.info(userRepository.findById(userId).get().getNickname() + " 사용자가 `" + boardGameRepository.findById(boardgameId).get().getName() + "` 보드게임의 즐겨찾기를 해제했습니다.");
     }
 
     @Transactional(readOnly = true)
@@ -189,12 +212,22 @@ public class UserService {
         }
 
         User loginUser = userRepository.findById(userId).get();
+        int kidingChipCount = loginUser.getKidingChip();
+
+        // kidingChip 개수가 같은 사용자들의 닉네임을 조회
+        List<String> sameKidingChipNicknames = userRepository.findAllByKidingChip(kidingChipCount)
+                .stream()
+                .map(User::getNickname)
+                .collect(Collectors.toList());
+
         return MyPageRes.builder()
                 .nickname(loginUser.getNickname())
                 .answers(loginUser.getAnswers())
                 .score(loginUser.getScore())
                 .players_with(loginUser.getPlayers_with())
-                .kiding_chip(loginUser.getKiding_chip()).build();
+                .kiding_chip(loginUser.getKidingChip())
+                .sameKidingChipNicknames(sameKidingChipNicknames)
+                .build();
     }
 
     @Transactional(readOnly = true)

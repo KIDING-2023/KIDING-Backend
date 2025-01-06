@@ -14,7 +14,6 @@ public class BoardGameRes {
     private Long players;
     private boolean bookmarked;
 
-
     public static BoardGameRes from(BoardGame boardGame) {
         return BoardGameRes.builder()
                 .id(boardGame.getId())
