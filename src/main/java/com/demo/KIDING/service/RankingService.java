@@ -23,7 +23,7 @@ public class RankingService {
     private final UserRepository userRepository;
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RankingResponse> getRanking() {
         List<User> users = userRepository.findAll();
 
@@ -31,6 +31,13 @@ public class RankingService {
         List<User> sortedUsers = users.stream()
                 .sorted((u1, u2) -> Integer.compare(u2.getKidingChip(), u1.getKidingChip()))
                 .collect(Collectors.toList());
+
+        if (!sortedUsers.isEmpty()) {
+            // 1위 사용자 점수 업데이트
+            User topUser = sortedUsers.get(0);
+            topUser.updateScoreIfEligible();
+            userRepository.save(topUser); // 변경사항 저장
+        }
 
         // 정렬된 순서대로 RankingResponse 생성 및 순위 부여
         return IntStream.range(0, sortedUsers.size())
@@ -79,6 +86,7 @@ public class RankingService {
         rankingRepository.deleteAll();
     }
 
+    // 랭킹에서 1위 추출
     public RankingRes getTopUserByAnswers() throws BaseException {
 
         User rankingUser = userRepository.findTopByOrderByAnswersDesc();

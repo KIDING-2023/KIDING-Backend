@@ -9,4 +9,8 @@ public class FriendRequestRes {
     private String senderNickname;
     private String receiverNickname;
     private boolean isAccepted;
+
+    public boolean getIsAccepted() {
+        return isAccepted;
+    }
 }

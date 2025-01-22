@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -39,6 +40,18 @@ public class User extends BaseEntity{
     private int answers;  // 누적 대답수
 
     private int score;  // 1위 경험횟수
+
+    // 1위 경험 횟수
+    @Column(name = "last_score_update_date")
+    private LocalDate lastScoreUpdateDate; // 마지막 점수 업데이트 날짜
+
+    public void updateScoreIfEligible() {
+        LocalDate today = LocalDate.now();
+        if (lastScoreUpdateDate == null || !lastScoreUpdateDate.isEqual(today)) {
+            this.score += 1;
+            this.lastScoreUpdateDate = today;
+        }
+    }
 
     private int players_with;  // 함께한 친구
 

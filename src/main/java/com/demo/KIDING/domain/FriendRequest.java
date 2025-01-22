@@ -1,6 +1,7 @@
 package com.demo.KIDING.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,9 +26,11 @@ public class FriendRequest {
     @ManyToOne
     private User receiver;
 
+    @JsonProperty
     private boolean isAccepted;
 
-    public void requestReply(boolean result) {
-        this.isAccepted = false;
+    public boolean getIsAccepted() {
+        return isAccepted;
     }
+
 }

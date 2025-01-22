@@ -88,8 +88,6 @@ public class UserService {
             // 2. 실제 검증. authenticate() 메서드를 통해 요청된 Member 에 대한 검증 진행
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-            System.out.println("=============test3===============");
-
             // 3. 인증 정보를 기반으로 JWT 토큰 생성
             JwtToken jwtToken = jwtProvider.generateToken(authentication);
 
@@ -110,13 +108,6 @@ public class UserService {
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
-
-//    private void validateMatchedPassword(String rawPassword, String encodedPassword) {
-//        // 비밀번호 검증 로직
-//        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-//            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-//        }
-//    }
 
     @Transactional
     public void character(Long userId, Integer num) throws BaseException {

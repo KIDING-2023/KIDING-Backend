@@ -68,7 +68,6 @@ public class FriendRequestService {
         FriendRequest friendRequest = friendRequestRepository.findBySenderAndReceiver(sender, receiver)
                 .orElseThrow(() -> new IllegalStateException("친구 요청이 존재하지 않습니다."));
 
-
         if (isAccepted) {
             Friends friendship = Friends.builder()
                     .fromUser(sender)

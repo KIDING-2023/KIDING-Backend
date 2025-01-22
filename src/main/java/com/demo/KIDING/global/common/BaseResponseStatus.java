@@ -22,6 +22,7 @@ public enum BaseResponseStatus {
     NO_BOARD_GAME_PLAYERS_YET(true, 200, "아직 게임 플레이어가 없습니다."),
     NO_GAME_PLAYED_YET(true, 200, "아직 보드게임에 참여하지 않았습니다."),
     NO_USER_FOUND(true, 200, "해당 유저를 찾을 수 없습니다."),
+
     FRIEND_RELATION_NOT_FOUND(true, 200, "친구가 아닙니다."),
     NO_DATA_FOUND(true, 200, "검색어에 해당되는 데이터가 없습니다."),
     NO_GAME_FOUND(true, 200, "해당 게임은 존재하지 않습니다"),

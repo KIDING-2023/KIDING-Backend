@@ -125,18 +125,6 @@ public class BoardGameController {
 
     }
 
-//    @GetMapping("/ranking/today") // 오늘의 랭킹 조회
-//    public BaseResponse<RankingRes> todayRanking() {
-//
-//        try {
-//            // userRepository에서 게임플레이 횟수 오름차순으로 사용자 한명 정보만 반환
-//            return new BaseResponse<>(rankingService.getTopUserByAnswers());
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//    }
-
-
     @GetMapping("/ranking/today") // 오늘의 랭킹 조회
     public BaseResponse<RankingRes> todayRanking() {
 

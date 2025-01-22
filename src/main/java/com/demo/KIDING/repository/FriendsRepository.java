@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface FriendsRepository extends JpaRepository<Friends, Long> {
     List<Friends> findByFromUserIdAndIsAcceptedTrue(Long fromUserId);
 
+    Optional<Friends> findByFromUserIdAndToUserId(Long fromUserId, Long toUserId);
+
     Optional<Friends> findByFromUserIdAndToUserIdAndIsAcceptedTrue(Long fromUserId, Long toUserId);
 
 }

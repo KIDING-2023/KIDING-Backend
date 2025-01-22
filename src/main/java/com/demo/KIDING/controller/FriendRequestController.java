@@ -23,13 +23,13 @@ public class FriendRequestController {
 
     @PostMapping("/respond")
     public String respondToFriendRequest(@RequestBody FriendRequestRes friendRequestRes) {
-        System.out.println("Controller: FriendRequestRes.isAccepted = " + friendRequestRes.isAccepted());
+        System.out.println("Controller: FriendRequestRes.isAccepted = " + friendRequestRes.getIsAccepted());
         friendRequestService.respondToFriendRequest(
                 friendRequestRes.getSenderNickname(),
                 friendRequestRes.getReceiverNickname(),
-                friendRequestRes.isAccepted()
+                friendRequestRes.getIsAccepted()
         );
-        return friendRequestRes.isAccepted() ? "Friend request accepted" : "Friend request rejected";
+        return friendRequestRes.getIsAccepted() ? "Friend request accepted" : "Friend request rejected";
     }
 
 }

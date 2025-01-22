@@ -95,7 +95,7 @@ public class BoardGameService {
     }
 
     @Transactional(readOnly = true)
-    public List<RecentGameRes> boardGameRecent(Long userId) throws BaseException{
+    public List<RecentGameRes> boardGameRecent(Long userId) throws BaseException {
         if (!userRepository.existsById(userId)) {
             throw new BaseException(NO_USER_FOUND);
         }
@@ -107,36 +107,43 @@ public class BoardGameService {
         if (gameUserRepository.existsByUserId(userId)) {  // 보드게임 하나라도 해본 경우
             User user = userRepository.findById(userId).get();
             List<GameUser> byUserId = gameUserRepository.findByUserId(userId);  // 게임 기록 조회
-            List<RecentGameRes> boardGameResList = new ArrayList<>();
+            Map<String, RecentGameRes> uniqueGames = new HashMap<>(); // 게임 이름 기준 중복 제거를 위한 Map
+
             for (GameUser gameUser : byUserId) {  // 보드게임 이름 가져와서 값 넣어주기
                 BoardGame bg = boardGameRepository.findByName(gameUser.getBoardGame().getName()).get();
-                boardGameResList.add(RecentGameRes.builder()
-                        .name(bg.getName())
-                        .players(bg.getPlayers())
-                        .bookmarked(false)
-                        .time(gameUser.getCreatedDate()).build());
+                String gameName = bg.getName();
+                RecentGameRes recentGame = uniqueGames.get(gameName);
+
+                // 현재 기록이 더 최신일 경우 업데이트
+                if (recentGame == null || gameUser.getCreatedDate().compareTo(recentGame.getTime()) > 0) {
+                    uniqueGames.put(gameName, RecentGameRes.builder()
+                            .name(gameName)
+                            .players(bg.getPlayers())
+                            .bookmarked(false)
+                            .time(gameUser.getCreatedDate()).build());
+                }
             }
 
-            // 즐겨찾기한 게임이름 추출
+            // 즐겨찾기한 게임 이름 추출
             List<String> bookmarkedGameNames = user.getBookMarks().stream()
                     .map(bookmark -> bookmark.getBoardGame().getName())
                     .collect(Collectors.toList());
 
             // 즐겨찾기 여부 표시
-            for (RecentGameRes recentGameRes: boardGameResList) {
-                for (String bookmarkedGame: bookmarkedGameNames) {
-                    if (Objects.equals(recentGameRes.getName(), bookmarkedGame)) {  // 이름 일치하면
-                        recentGameRes.setBookmarked(true);
-                    }
+            uniqueGames.values().forEach(recentGameRes -> {
+                if (bookmarkedGameNames.contains(recentGameRes.getName())) {
+                    recentGameRes.setBookmarked(true);
                 }
-            }
+            });
 
+            // Map에서 값만 추출해 리스트로 변환 후 정렬
+            List<RecentGameRes> boardGameResList = new ArrayList<>(uniqueGames.values());
             boardGameResList.sort(Comparator.comparing(RecentGameRes::getTime).reversed()); // 최근 플레이순으로 정렬
 
             return boardGameResList;
 
         } else {
-            log.info(userId + "사용자는 아직 보드게임을 플레이하지 않았습니다.");
+            log.info(userId + " 사용자는 아직 보드게임을 플레이하지 않았습니다.");
             throw new BaseException(NO_GAME_PLAYED_YET);  // 아직 게임 플레이 X
         }
     }
@@ -150,9 +157,12 @@ public class BoardGameService {
         if (!boardGameRepository.existsById(boardgameId)) {
             throw new BaseException(NO_GAME_FOUND);
         }
-//        BoardGame game = boardGameRepository.findById(boardgameId).get();
-//        User loginUser = userRepository.findById(userId).get();
-//        //loginUser.playGame(count);
+        BoardGame game = boardGameRepository.findById(boardgameId).get();
+        User loginUser = userRepository.findById(userId).get();
+//        loginUser.playGame(count);
+        game.playGame();
+        loginUser.playGame();
+
     }
 
 
@@ -179,18 +189,18 @@ public class BoardGameService {
     }
 
 
-    @Transactional(readOnly = true)
-    public RankingRes todayRanking() throws BaseException {
-
-        Optional<List<RankingRes>> rankingRes = userRepository.findRankUser();
-
-        if (rankingRes.get().isEmpty()) {
-            throw new BaseException(NO_BOARD_GAME_PLAYERS_YET);
-        }
-
-        return rankingRes.get().get(0);
-
-    }
+//    @Transactional(readOnly = true)
+//    public RankingRes todayRanking() throws BaseException {
+//
+//        Optional<List<RankingRes>> rankingRes = userRepository.findRankUser();
+//
+//        if (rankingRes.get().isEmpty()) {
+//            throw new BaseException(NO_BOARD_GAME_PLAYERS_YET);
+//        }
+//
+//        return rankingRes.get().get(0);
+//
+//    }
 
     // 주사위 눈
     public int rollDice(Long boardgameId, Long userId, Long count) throws BaseException {
