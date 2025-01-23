@@ -66,7 +66,7 @@ public class User extends BaseEntity{
 
     public void playGame() {
         this.answers += 1;
-        this.kidingChip += 1;
+        //this.kidingChip += 1;
     }
 
     public void setCharacter(Integer num) {

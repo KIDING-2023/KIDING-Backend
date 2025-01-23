@@ -79,35 +79,24 @@ public class BoardGameController {
         }
     }
 
-//    @PostMapping("/boardgame")  // 답변완료 api
-//    public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
-//
-//        try {
-//            Claims claims = jwtProvider.parseClaims(accessToken);
-//            String username = claims.get("nickname", String.class);
-//            Optional<User> optionalUser = userRepository.findByNickname(username);
-//            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), optionalUser.get().getId()/*, gamePlayReq.getCount()*/);
-//            return new BaseResponse<>(GAME_PLAYED);
-//        } catch (BaseException e) {
-//            return new BaseResponse<>(e.getStatus());
-//        }
-//
-//    }
+    @PostMapping("/boardgame") // 답변완료 api
+    public BaseResponse<BaseResponseStatus> boardGamePlay(
+            @RequestHeader(value = "Authorization") String accessToken,
+            @RequestBody GamePlayReq gamePlayReq) {
+        try {
 
-    @PostMapping("/boardgame")  // 답변완료 api
-    public BaseResponse<BaseResponseStatus> boardGamePlay(@RequestHeader(value = "Authorization") String accessToken, @RequestBody GamePlayReq gamePlayReq) {
+            // GamePlayReq에서 boardGameId와 count 추출
+            Long boardGameId = gamePlayReq.getBoardGameId();
+            int count = gamePlayReq.getCount();
+            // 서비스 호출 (accessToken과 boardGameId 전달)
+            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), accessToken, count);
 
-        try { Claims claims = jwtProvider.parseClaims(accessToken);
-            String username = claims.get("nickname", String.class);
-            Optional<User> optionalUser = userRepository.findByNickname(username);
-
-            boardGameService.boardGamePlay(gamePlayReq.getBoardGameId(), gamePlayReq.getUserId());
             return new BaseResponse<>(GAME_PLAYED);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
-
     }
+
 
 
     @PostMapping("/boardgame/final")  // 최종 답변

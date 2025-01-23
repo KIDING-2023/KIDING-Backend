@@ -2,30 +2,38 @@ package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.FriendRequest;
 import com.demo.KIDING.domain.Friends;
-import com.demo.KIDING.domain.Notification;
 import com.demo.KIDING.domain.User;
-import com.demo.KIDING.dto.MessageDto;
+import com.demo.KIDING.dto.RequestBoxRes;
+import com.demo.KIDING.global.common.BaseException;
+import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.repository.FriendRequestRepository;
 import com.demo.KIDING.repository.FriendsRepository;
-import com.demo.KIDING.repository.NotificationRepository;
 import com.demo.KIDING.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.demo.KIDING.global.common.BaseResponseStatus.NO_USER_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class FriendRequestService {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    // private final SimpMessagingTemplate messagingTemplate;
 
     private final FriendRequestRepository friendRequestRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final FriendsRepository friendsRepository;
+    private final RankingService rankingService;
+    private final JwtProvider jwtProvider;
 
 
     @Transactional
@@ -87,87 +95,34 @@ public class FriendRequestService {
 
     }
 
-    // 친구 신청 수락 (디버그 로그 추가)
-//    @Transactional
-//    public void respondToFriendRequest(String senderNickname, String receiverNickname, boolean isAccepted) {
-//        System.out.println("Method respondToFriendRequest called with:");
-//        System.out.println("Sender Nickname: " + senderNickname);
-//        System.out.println("Receiver Nickname: " + receiverNickname);
-//        System.out.println("isAccepted: " + isAccepted);
-//
-//        // 사용자 조회
-//        User sender = userRepository.findByNickname(senderNickname)
-//                .orElseThrow(() -> {
-//                    System.err.println("Invalid sender nickname: " + senderNickname);
-//                    return new IllegalArgumentException("Invalid sender nickname");
-//                });
-//
-//        User receiver = userRepository.findByNickname(receiverNickname)
-//                .orElseThrow(() -> {
-//                    System.err.println("Invalid receiver nickname: " + receiverNickname);
-//                    return new IllegalArgumentException("Invalid receiver nickname");
-//                });
-//
-//        // 친구 요청 조회
-//        FriendRequest friendRequest = friendRequestRepository.findBySenderAndReceiver(sender, receiver)
-//                .orElseThrow(() -> {
-//                    System.err.println("Friend request not found for sender: " + senderNickname + ", receiver: " + receiverNickname);
-//                    return new IllegalStateException("Friend request does not exist");
-//                });
-//
-//        System.out.println("Friend request found: " + friendRequest);
-//
-//        // 수락 또는 거절 처리
-//        if (isAccepted) {
-//            System.out.println("Processing friend request as accepted...");
-//            // 친구 관계 생성 및 저장
-//            Friends friendship = Friends.builder()
-//                    .fromUser(sender)
-//                    .toUser(receiver)
-//                    .isAccepted(true)
-//                    .build();
-//
-//            Friends savedFriendship = friendsRepository.save(friendship);
-//            System.out.println("Friendship saved: " + savedFriendship);
-//
-//            // 수락 알림 전송
-//            notificationService.sendFriendRequestResponseNotification(senderNickname, receiverNickname, "accepted");
-//            System.out.println("Notification sent for accepted friend request.");
-//        } else {
-//            System.out.println("Processing friend request as rejected...");
-//            // 거절 알림 전송
-//            notificationService.sendFriendRequestResponseNotification(senderNickname, receiverNickname, "rejected");
-//            System.out.println("Notification sent for rejected friend request.");
-//        }
-//
-//        // 친구 요청 삭제
-//        friendRequestRepository.delete(friendRequest);
-//        System.out.println("Friend request deleted for sender: " + senderNickname + ", receiver: " + receiverNickname);
-//    }
+    @Transactional(readOnly = true) // 친구 신청 확인
+    public List<RequestBoxRes> getReceivedFriendRequests(String accessToken) throws BaseException {
+        // Access Token에서 사용자 정보 추출
+        Claims claims = jwtProvider.parseClaims(accessToken);
+        String username = claims.get("nickname", String.class);
 
+        // 사용자 조회
+        User receiver = userRepository.findByNickname(username)
+                .orElseThrow(() -> new BaseException(NO_USER_FOUND));
 
-//        public void acceptFriendRequest(Long requestId) {
-//        FriendRequest friendRequest = friendRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
-//        friendRequest.requestReply(false);
-//        friendRequestRepository.save(friendRequest);
-//
-//        Friends friendship = Friends.builder()
-//                .fromUser(friendRequest.getSender())
-//                .toUser(friendRequest.getReceiver())
-//                .isAccepted(true)
-//                .build();
-//        friendsRepository.save(friendship);
-//
-//        Notification notification = Notification.builder()
-//                .message(friendRequest.getReceiver().getNickname() + "님이 친구요청을 수락했습니다.")
-//                .receiver(friendRequest.getSender())
-//                .read(false)
-//                .build();
-//        notificationRepository.save(notification);
-//
-//        messagingTemplate.convertAndSendToUser(friendRequest.getSender().getNickname(), "/queue/notifications", notification);
-//    }
+        // 친구 요청 조회
+        List<FriendRequest> requests = friendRequestRepository.findByReceiverIdAndIsAcceptedFalse(receiver.getId());
 
+        // 응답 DTO로 변환
+        return requests.stream()
+                .map(request -> {
+                    User sender = request.getSender();
+                    int senderRank = rankingService.calculateUserRanking(sender.getId());
+
+                    return RequestBoxRes.builder()
+                            .requestId(request.getId())
+                            .senderNickname(sender.getNickname())
+                            .senderProfile(sender.getProfile())
+                            .senderRank(senderRank) // 랭킹 없으면 -1 반환
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 }
 
 

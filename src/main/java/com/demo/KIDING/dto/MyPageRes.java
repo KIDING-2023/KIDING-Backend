@@ -21,6 +21,8 @@ public class MyPageRes {
 
     private int kiding_chip;
 
+    private int rank;
+
     // 동점자 추가
     private List<String> sameKidingChipNicknames;
 

@@ -23,8 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.demo.KIDING.domain.Role.ROLE_USER;
 import static com.demo.KIDING.global.common.BaseResponseStatus.*;
@@ -39,6 +41,7 @@ public class UserService {
     private final BookMarkRepository bookMarkRepository;
     private final JwtProvider jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RankingService rankingService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -202,24 +205,34 @@ public class UserService {
             throw new BaseException(NO_USER_FOUND);
         }
 
+        // 현재 사용자 조회
         User loginUser = userRepository.findById(userId).get();
         int kidingChipCount = loginUser.getKidingChip();
 
-        // kidingChip 개수가 같은 사용자들의 닉네임을 조회
-        List<String> sameKidingChipNicknames = userRepository.findAllByKidingChip(kidingChipCount)
-                .stream()
+        // 모든 사용자 목록 가져오기
+        List<User> users = userRepository.findAll();
+
+        int myRank = rankingService.calculateUserRanking(userId);
+
+        // kidingChip 개수가 같은 사용자들의 닉네임 조회
+        List<String> sameKidingChipNicknames = users.stream()
+                .filter(user -> user.getKidingChip() == kidingChipCount)
                 .map(User::getNickname)
                 .collect(Collectors.toList());
 
+        // 응답 생성
         return MyPageRes.builder()
                 .nickname(loginUser.getNickname())
                 .answers(loginUser.getAnswers())
                 .score(loginUser.getScore())
                 .players_with(loginUser.getPlayers_with())
                 .kiding_chip(loginUser.getKidingChip())
+                .rank(myRank)  // 현재 랭킹 추가
                 .sameKidingChipNicknames(sameKidingChipNicknames)
                 .build();
     }
+
+
 
     @Transactional(readOnly = true)
     public List<SearchRes> searchItem(String word) throws BaseException {

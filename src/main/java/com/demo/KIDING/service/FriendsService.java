@@ -2,16 +2,21 @@ package com.demo.KIDING.service;
 
 import com.demo.KIDING.domain.Friends;
 import com.demo.KIDING.domain.User;
+import com.demo.KIDING.dto.FriendInfo;
 import com.demo.KIDING.dto.MyFriendRes;
 import com.demo.KIDING.global.common.BaseException;
+import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.repository.FriendsRepository;
 import com.demo.KIDING.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.demo.KIDING.global.common.BaseResponseStatus.FRIEND_RELATION_NOT_FOUND;
 import static com.demo.KIDING.global.common.BaseResponseStatus.NO_USER_FOUND;
@@ -23,6 +28,9 @@ public class FriendsService {
 
     private final FriendsRepository friendsRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final RankingService rankingService;
+    private final JwtProvider jwtProvider;
 
     // 친구 조회
     @Transactional(readOnly = true)
@@ -47,6 +55,33 @@ public class FriendsService {
                 .profile(friend.getProfile())
                 .score(friend.getScore())
                 .build();
+    }
+
+
+
+    public List<FriendInfo> getFriendsList(String accessToken) throws BaseException {
+        // Access Token에서 사용자 정보 추출
+        Claims claims = jwtProvider.parseClaims(accessToken);
+        String username = claims.get("nickname", String.class);
+
+        // 사용자 조회
+        User currentUser = userRepository.findByNickname(username)
+                .orElseThrow(() -> new BaseException(NO_USER_FOUND));
+
+        // 친구들의 User ID 가져오기
+        List<Long> friendIds = friendsRepository.findFriendIdsByUserId(currentUser.getId());
+
+        // 친구들의 User 정보 가져오기
+        List<User> friends = userRepository.findAllById(friendIds);
+
+        // 친구 정보를 DTO로 매핑
+        return friends.stream()
+                .map(friend -> new FriendInfo(
+                        friend.getNickname(),
+                        friend.getProfile(),
+                        rankingService.calculateUserRanking(friend.getId()) // 랭킹 계산 메서드 호출
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional

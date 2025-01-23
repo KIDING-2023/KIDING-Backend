@@ -7,10 +7,12 @@ import com.demo.KIDING.dto.BoardGameRes;
 import com.demo.KIDING.dto.RankingRes;
 import com.demo.KIDING.dto.RecentGameRes;
 import com.demo.KIDING.global.common.BaseException;
+import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
 import com.demo.KIDING.repository.GameUserRepository;
 import com.demo.KIDING.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class BoardGameService {
     private final BoardGameRepository boardGameRepository;
     private final GameUserRepository gameUserRepository;
     private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
     @Transactional(readOnly = true)
     public List<BoardGameRes> boardGamesMain(Long userId) throws BaseException {
@@ -149,20 +152,33 @@ public class BoardGameService {
     }
 
     @Transactional
-    public void boardGamePlay(Long boardgameId, Long userId/*, Integer count*/) throws BaseException{
+    public void boardGamePlay(Long boardgameId, String accessToken, int count) throws BaseException {
+        // Access Token에서 사용자 정보 추출
+        Claims claims = jwtProvider.parseClaims(accessToken);
+        String username = claims.get("nickname", String.class);
 
-        if (!userRepository.existsById(userId)) {
+        // 사용자 조회
+        Optional<User> optionalUser = userRepository.findByNickname(username);
+        if (optionalUser.isEmpty()) {
             throw new BaseException(NO_USER_FOUND);
         }
+        User loginUser = optionalUser.get();
+
+        // 보드게임 존재 여부 확인
         if (!boardGameRepository.existsById(boardgameId)) {
             throw new BaseException(NO_GAME_FOUND);
         }
+
+        // 보드게임 및 사용자 데이터 가져오기
         BoardGame game = boardGameRepository.findById(boardgameId).get();
-        User loginUser = userRepository.findById(userId).get();
-//        loginUser.playGame(count);
+
+        // 게임 플레이 처리
         game.playGame();
         loginUser.playGame();
 
+        // 사용자 키딩칩 업데이트
+        loginUser.setKidingChip(loginUser.getKidingChip() + count);
+        userRepository.save(loginUser); // 변경된 사용자 정보 저장
     }
 
 
@@ -187,20 +203,6 @@ public class BoardGameService {
 
         log.info(userId +"번 사용자가 " + game.getName() + " 보드게임을 플레이하였습니다.");
     }
-
-
-//    @Transactional(readOnly = true)
-//    public RankingRes todayRanking() throws BaseException {
-//
-//        Optional<List<RankingRes>> rankingRes = userRepository.findRankUser();
-//
-//        if (rankingRes.get().isEmpty()) {
-//            throw new BaseException(NO_BOARD_GAME_PLAYERS_YET);
-//        }
-//
-//        return rankingRes.get().get(0);
-//
-//    }
 
     // 주사위 눈
     public int rollDice(Long boardgameId, Long userId, Long count) throws BaseException {

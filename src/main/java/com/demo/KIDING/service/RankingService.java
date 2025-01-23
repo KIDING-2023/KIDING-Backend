@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,7 +24,7 @@ public class RankingService {
     private final UserRepository userRepository;
 
 
-    @Transactional
+    @Transactional // 전체 랭킹 조회
     public List<RankingResponse> getRanking() {
         List<User> users = userRepository.findAll();
 
@@ -91,6 +92,30 @@ public class RankingService {
 
         User rankingUser = userRepository.findTopByOrderByAnswersDesc();
         return RankingRes.from(rankingUser);
+    }
+
+    /**
+     * 특정 사용자의 랭킹을 계산
+     * @param userId 사용자 ID
+     * @return 사용자 랭킹
+     */
+    @Transactional(readOnly = true)
+    public int calculateUserRanking(Long userId) {
+        // 모든 사용자 가져오기
+        List<User> users = userRepository.findAll();
+
+        // kidingChip 기준 내림차순 정렬
+        List<User> sortedUsers = users.stream()
+                .sorted((u1, u2) -> Integer.compare(u2.getKidingChip(), u1.getKidingChip()))
+                .collect(Collectors.toList());
+
+        // 사용자 ID와 랭킹 매핑
+        Map<Long, Integer> userRankMap = IntStream.range(0, sortedUsers.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> sortedUsers.get(i).getId(), i -> i + 1));
+
+        // 현재 사용자의 랭킹 반환
+        return userRankMap.getOrDefault(userId, -1); // 랭킹 없으면 -1 반환
     }
 
 
