@@ -9,6 +9,8 @@ import com.demo.KIDING.global.common.BaseException;
 import com.demo.KIDING.repository.BoardGameRepository;
 import com.demo.KIDING.repository.BookMarkRepository;
 import com.demo.KIDING.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +79,6 @@ public class UserService {
             throw new BaseException(FAILED_TO_SIGNUP);
         }
     }
-
 
     @Transactional
     public JwtToken signIn(String nickname, String password) {
@@ -232,8 +233,6 @@ public class UserService {
                 .build();
     }
 
-
-
     @Transactional(readOnly = true)
     public List<SearchRes> searchItem(String word) throws BaseException {
         List<SearchRes> searchResList = new ArrayList<>();
@@ -310,6 +309,16 @@ public class UserService {
             result = "이미 사용 중인 전화번호입니다.";
         }
         return result;
+    }
+
+
+    @Transactional
+    public String deleteUser(Long userId) throws BaseException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        userRepository.delete(user);
+        return "회원 탈퇴가 완료되었습니다.";
     }
 
 }

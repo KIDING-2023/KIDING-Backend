@@ -1,5 +1,7 @@
 package com.demo.KIDING.global.jwt;
 
+import com.demo.KIDING.global.common.BaseException;
+import com.demo.KIDING.global.common.BaseResponseStatus;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -145,5 +147,37 @@ public class JwtProvider {
             return null;
         }
     }
+
+    public Long getUserIdFromToken(String token) throws BaseException {
+        try {
+            // "Bearer " 접두어 제거
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // JWT 토큰 파싱
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key) // Key 객체 사용
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            // Claims에서 userId 추출
+            String userIdString = claims.getSubject(); // 일반적으로 subject를 userId로 설정
+            if (userIdString == null || !userIdString.matches("\\d+")) {
+                throw new BaseException(BaseResponseStatus.INVALID_TOKEN); // 숫자 형식이 아닐 경우 예외
+            }
+
+            return Long.valueOf(userIdString); // Long 타입으로 변환하여 반환
+        } catch (ExpiredJwtException e) {
+            log.error("Expired JWT token", e);
+            throw new BaseException(BaseResponseStatus.TOKEN_EXPIRED); // 만료된 토큰
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Invalid JWT token", e);
+            throw new BaseException(BaseResponseStatus.INVALID_TOKEN); // 유효하지 않은 토큰
+        }
+    }
+
+
 
 }

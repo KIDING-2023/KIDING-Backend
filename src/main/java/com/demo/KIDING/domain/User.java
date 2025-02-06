@@ -82,6 +82,13 @@ public class User extends BaseEntity{
                 return ;
             case 4:
                 this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/Group+13876.png";
+                return ;
+            case 5:
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/5+detective.png";
+                return;
+            case 6:
+                this.profile = "https://kiding-bucket.s3.ap-northeast-2.amazonaws.com/character/6+kiding+chip.png";
+
         }
     }
 

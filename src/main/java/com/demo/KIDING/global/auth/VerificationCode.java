@@ -27,7 +27,7 @@ public class VerificationCode {
 
         return String.format(
                 """
-                        인증번호는 
+                        [KIDING BOOK] 인증번호는 
                         [%s] 입니다.
                         입력 기한 : %s
                                 """,

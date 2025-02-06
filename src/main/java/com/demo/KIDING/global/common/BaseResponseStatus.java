@@ -34,7 +34,9 @@ public enum BaseResponseStatus {
     NO_BOOKMARK_YET(true, 200, "북마크한 게임이 없습니다."),
     VERIFICATION_CODE_NOT_FOUND(false, 400, "인증 코드가 틀렸습니다."),
     BOOKMARK_NOT_FOUND(false, 200, "북마크를 찾을 수 없습니다."),
-    BOOKMARK_DELETED(true, 200, "북마크가 해제되었습니다.");
+    BOOKMARK_DELETED(true, 200, "북마크가 해제되었습니다."),
+    INVALID_TOKEN(false,400 ,"유효하지 않은 토큰입니다." ),
+    TOKEN_EXPIRED(false,400 ,"만료된 토큰입니다." );
 
     private final boolean isSuccess;
 

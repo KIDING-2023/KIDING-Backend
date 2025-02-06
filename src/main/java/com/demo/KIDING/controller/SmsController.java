@@ -15,13 +15,6 @@ public class SmsController {
 
     private final SmsService smsService;
 
-//    @PostMapping("/help/send")
-//    public String getPhoneNumberForVerification(@RequestBody SmsRequest.PhoneNumberForVerificationRequest request) {
-//        LocalDateTime sentAt = LocalDateTime.now();
-//        smsService.sendVerificationMessage(request.getPhoneNumber(), sentAt);
-//        return "인증번호를 보냈습니다.";
-//    }
-
     @PostMapping("/help/send")
     public BaseResponse getPhoneNumberForVerification(@RequestBody SmsRequest.PhoneNumberForVerificationRequest request) {
 
