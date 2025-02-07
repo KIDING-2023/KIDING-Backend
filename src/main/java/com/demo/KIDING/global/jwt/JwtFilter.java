@@ -29,8 +29,6 @@ public class JwtFilter extends GenericFilterBean {
 
         // 1. Request Header에서 JWT 토큰 추출
         String token = resolveToken((HttpServletRequest) request);
-//        System.out.println("===토큰 확인====");
-//        System.out.println(token);
 
         // 2. validateToken으로 토큰 유효성 검사
         if (token != null && jwtProvider.validateToken(token)) {

@@ -56,9 +56,9 @@ public class UserService {
             throw new BaseException(POST_USERS_EXISTS_NICKNAME);
         }
 
-        if (userRepository.existsByPhone(signUpReq.getPhone())) {
-            throw new BaseException(POST_USERS_EXISTS_PHONE);
-        }
+//        if (userRepository.existsByPhone(signUpReq.getPhone())) {
+//            throw new BaseException(POST_USERS_EXISTS_PHONE);
+//        }
 
         try {
             String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
