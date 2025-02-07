@@ -44,6 +44,7 @@ public class UserService {
     private final RankingService rankingService;
     private final FriendsRepository friendsRepository;
     private final FriendRequestRepository friendRequestRepository;
+    private final GameUserRepository gameUserRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -323,7 +324,11 @@ public class UserService {
         // 4️⃣ 친구 관계 삭제 (friends 테이블)
         friendsRepository.deleteAllByUserId(user);
 
-        userRepository.delete(user);
+        bookMarkRepository.deleteByUser(user);
+
+        gameUserRepository.deleteByUser(user);
+
+                userRepository.delete(user);
         return "회원 탈퇴가 완료되었습니다.";
     }
 

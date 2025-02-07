@@ -38,7 +38,7 @@ public class FriendsController {
     }
 
     @DeleteMapping("/friends/delete/{friendId}")
-    public BaseResponse<String> deleteFriend(@RequestHeader("Authorization") String token, @PathVariable Long friendId) {
+    public BaseResponse<String> deleteFriend(@RequestHeader("Authorization") String token, @PathVariable String friendNickname) {
         try {
 
             // 토큰 파싱하여 nickname 추출
@@ -51,9 +51,12 @@ public class FriendsController {
                 throw new BaseException(BaseResponseStatus.NO_USER_FOUND);
             }
 
+            User friend = userRepository.findByNickname(friendNickname)
+                    .orElseThrow(() -> new BaseException(BaseResponseStatus.NO_USER_FOUND));
+
             Long userId = optionalUser.get().getId();
 
-            return new BaseResponse<>(friendsService.deleteFriend(userId, friendId));
+            return new BaseResponse<>(friendsService.deleteFriend(userId, friend.getId()));
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
