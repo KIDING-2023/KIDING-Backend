@@ -11,15 +11,16 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Builder
-@Table(
-        uniqueConstraints = {  // unqiue 설정
-                @UniqueConstraint(
-                        name="friends",
-                        columnNames = {"fromUserId", "toUserId"}
-                )
-        }
-)
+//@Table(
+//        uniqueConstraints = {  // unqiue 설정
+//                @UniqueConstraint(
+//                        name="friends",
+//                        columnNames = {"fromUserId", "toUserId"}
+//                )
+//        }
+//)
 @Entity
+//@Table(name = "friends")
 public class Friends extends BaseEntity{
 
     @Id
@@ -27,11 +28,11 @@ public class Friends extends BaseEntity{
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="fromUserId")
+    @JoinColumn(name="from_user_id")
     private User fromUser;  // 구독하는 유저
 
     @ManyToOne
-    @JoinColumn(name="toUserId")
+    @JoinColumn(name="to_user_id")
     private User toUser;  // 구독받는 유저
 
     private boolean isAccepted;

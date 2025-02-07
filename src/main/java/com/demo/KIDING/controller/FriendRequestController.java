@@ -21,12 +21,6 @@ public class FriendRequestController {
     private final FriendRequestService friendRequestService;
     private final JwtProvider jwtProvider;
 
-//    @PostMapping("/request")
-//    public void sendFriendRequest(@RequestBody FriendRequestReq request) {
-//        System.out.println("/api/friends/request");
-//        friendRequestService.sendFriendRequest(request.getSenderNickname(), request.getReceiverNickname());
-//    }
-
     // 친구 신청 보내기
     @PostMapping("/request")
     public void sendFriendRequest(

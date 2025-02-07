@@ -26,8 +26,6 @@ import static com.demo.KIDING.global.common.BaseResponseStatus.NO_USER_FOUND;
 @RequiredArgsConstructor
 public class FriendRequestService {
 
-    // private final SimpMessagingTemplate messagingTemplate;
-
     private final FriendRequestRepository friendRequestRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;

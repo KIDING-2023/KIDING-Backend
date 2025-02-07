@@ -6,9 +6,7 @@ import com.demo.KIDING.global.jwt.JwtProvider;
 import com.demo.KIDING.global.jwt.JwtToken;
 import com.demo.KIDING.global.common.BaseException;
 //import com.demo.KIDING.global.jwt.JwtTokenProvider;
-import com.demo.KIDING.repository.BoardGameRepository;
-import com.demo.KIDING.repository.BookMarkRepository;
-import com.demo.KIDING.repository.UserRepository;
+import com.demo.KIDING.repository.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +42,8 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RankingService rankingService;
+    private final FriendsRepository friendsRepository;
+    private final FriendRequestRepository friendRequestRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -312,10 +312,16 @@ public class UserService {
     }
 
 
-    @Transactional
+    @Transactional // 회원 탈퇴 (user 데이터를 포함하여 친구 데이터도 전부 삭제)
     public String deleteUser(Long userId) throws BaseException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        // 3️⃣ 친구 요청 삭제 (friend_request 테이블)
+        friendRequestRepository.deleteAllByUserId(user);
+
+        // 4️⃣ 친구 관계 삭제 (friends 테이블)
+        friendsRepository.deleteAllByUserId(user);
 
         userRepository.delete(user);
         return "회원 탈퇴가 완료되었습니다.";
