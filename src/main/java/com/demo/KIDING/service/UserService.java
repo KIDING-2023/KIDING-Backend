@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class UserService {
     private final FriendsRepository friendsRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final GameUserRepository gameUserRepository;
+    private EntityManager entityManager;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -52,13 +54,17 @@ public class UserService {
     @Transactional(rollbackFor = {Exception.class})
     public UserDtoRes signup(SignUpReq signUpReq) throws BaseException {
 
+        entityManager.flush();  // 변경 내용을 DB에 반영
+        entityManager.clear();  // JPA 1차 캐시 초기화
+
         if (userRepository.existsByNickname(signUpReq.getNickname())) {
             throw new BaseException(POST_USERS_EXISTS_NICKNAME);
         }
 
-//        if (userRepository.existsByPhone(signUpReq.getPhone())) {
-//            throw new BaseException(POST_USERS_EXISTS_PHONE);
-//        }
+        if (userRepository.existsByPhone(signUpReq.getPhone())) {
+            System.out.println("중복된 전화번호");
+            throw new BaseException(POST_USERS_EXISTS_PHONE);
+        }
 
         try {
             String encodedPwd = passwordEncoder.encode(signUpReq.getPassword());
