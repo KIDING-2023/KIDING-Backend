@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +47,16 @@ public class UserService {
     private final FriendsRepository friendsRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final GameUserRepository gameUserRepository;
-    private EntityManager entityManager;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Transactional(rollbackFor = {Exception.class})
     public UserDtoRes signup(SignUpReq signUpReq) throws BaseException {
+
 
         entityManager.flush();  // 변경 내용을 DB에 반영
         entityManager.clear();  // JPA 1차 캐시 초기화
