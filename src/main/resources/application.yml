@@ -23,23 +23,23 @@ spring:
     #AWS:Kiding2
     url: jdbc:mysql://kiding2.cjmcuiii67x9.ap-northeast-2.rds.amazonaws.com:3306/Kiding2
     username: admin
-    password: ando0925
+    password: 
 
 #    #Local
 #    url: jdbc:mysql://localhost:3306/kidinglocal?createDatabaseIfNotExist=true
 #    username: root
-#    password: Si8zcqt5!
+#    password: 
 
   jwt:
-    secret: uFZyGhiQblrsDuPoEV9kigecxOyUeTpDUDcEgbKIMKZy3o8CmW
+    secret: 
     access-token-expiration-minutes: 60
 
   # 전화번호 인증용
   sms:
-    api-key: NCSATBBMNUGXSPJW
-    api-secret: ZLKYK9COJVVPHUD6QSOGAHVYZ8XGAWSS
+    api-key: 
+    api-secret: 
     provider: https://api.coolsms.co.kr
-    sender: 01099709759
+    sender: 
 
   jpa:
     properties:
